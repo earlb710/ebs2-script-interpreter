@@ -351,6 +351,17 @@ end main
 - `numbers[1]` = second item
 - `numbers[2]` = third item
 
+**Pro Tip: Fixed-Size Arrays**
+When you know exactly how many items you'll have, you can create a fixed-size array:
+
+```javascript
+// Fixed-size array (cannot grow or shrink)
+var gameBoard as array[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0}  // 3x3 tic-tac-toe
+var daysOfWeek as array.text[7] = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"}
+```
+
+Fixed-size arrays are faster and use less memory!
+
 ### Indicators - Choosing from a Set
 
 Sometimes you want a variable that can only be specific values (like traffic light colors). Use `indicator`:

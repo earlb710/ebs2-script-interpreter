@@ -720,6 +720,54 @@ var last = numbers[4]       // Gets last element (for 5-item array)
 
 **Note:** Arrays are collections of multiple values that can be accessed by index. Use typed arrays for type safety.
 
+**Dynamic vs Fixed-Size Arrays:**
+
+EBS2 supports both dynamic and fixed-size arrays:
+
+```javascript
+// DYNAMIC ARRAYS (default) - size can change at runtime
+var dynamicArray as array = {1, 2, 3}
+dynamicArray.append(4)              // {1, 2, 3, 4} - size grows
+dynamicArray.remove(0)              // {2, 3, 4} - size shrinks
+dynamicArray.expand(2)              // {2, 3, 4, 0, 0} - size increases
+
+// FIXED-SIZE ARRAYS - size is set at declaration and cannot change
+var fixedArray as array[5] = {1, 2, 3, 4, 5}
+// fixedArray.append(6)             // ERROR: Cannot change size of fixed array
+// fixedArray.remove(0)             // ERROR: Cannot change size of fixed array
+fixedArray[0] = 10                  // OK: Can modify elements
+fixedArray[2] = 20                  // OK: Can modify elements
+
+// Fixed-size typed arrays
+var fixedNames as array.text[3] = {"Alice", "Bob", "Charlie"}
+var fixedScores as array.number[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+
+// Initialize fixed-size array with fill
+var zeros as array.number[100] = {}.fill(0, 100)
+var ones as array.number[50] = {}.fill(1, 50)
+
+// Access size
+var size = fixedArray.length        // 5 (cannot change)
+```
+
+**Key Differences:**
+
+| Feature | Dynamic Array | Fixed-Size Array |
+|---------|--------------|------------------|
+| **Declaration** | `var arr as array = {...}` | `var arr as array[size] = {...}` |
+| **Size** | Can grow or shrink | Fixed at declaration |
+| **Methods** | All methods available | No size-changing methods |
+| **Performance** | Flexible, may reallocate | Faster, no reallocation |
+| **Use Case** | Unknown or changing size | Known size at compile time |
+
+**When to Use:**
+- **Dynamic Arrays**: When you don't know how many elements you'll have, or when the size changes frequently (e.g., user input, growing lists)
+- **Fixed-Size Arrays**: When size is known and constant (e.g., board games with fixed dimensions, days of week, months)
+
+**Fixed-Size Array Restrictions:**
+- Cannot use: `.append()`, `.add()`, `.addFirst()`, `.remove()`, `.expand()`, `.shrink()`
+- Can use: `.copy()`, `.sort()`, `.reverse()`, element access `[index]`, `.length`
+
 #### indicator
 ```javascript
 // Declare with equals initialization (consistent with assignment)

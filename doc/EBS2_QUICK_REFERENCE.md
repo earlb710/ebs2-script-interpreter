@@ -319,12 +319,20 @@ var size = numbers.length     // 5
 var names as array.text = "Alice", "Bob", "Charlie"
 var scores as array.number = 85, 90, 95
 
+// Fixed-size arrays (size cannot change)
+var fixedArray as array[5] = {1, 2, 3, 4, 5}
+var fixedNames as array.text[3] = {"Alice", "Bob", "Charlie"}
+var board as array.number[9] = {}.fill(0, 9)  // 3x3 grid
+
 // Array methods
 var filled = {}.fill(0, 5)                   // {0, 0, 0, 0, 0}
 var expanded = {1, 2, 3}.expand(2)           // {1, 2, 3, 0, 0}
 var expanded = {1, 2, 3}.expand(2, 9)        // {1, 2, 3, 9, 9}
 var shrunk = {1, 2, 3, 4, 5}.shrink(2)       // {1, 2, 3}
 var part = {1, 2, 3, 4, 5}.copy(1, 4)        // {2, 3, 4}
+
+// Note: Fixed-size arrays cannot use size-changing methods
+// (append, add, remove, expand, shrink)
 ```
 
 ---
