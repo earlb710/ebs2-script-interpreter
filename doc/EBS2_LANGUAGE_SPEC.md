@@ -377,7 +377,7 @@ for each item in list
     // code
 end for
 
-while condition
+while condition loop
     // code
 end while
 
@@ -420,7 +420,7 @@ EBS2 supports curly braces `{}` as an alternative to the explicit `end` keywords
 | **If Statement** | `if x > 5 then ... end if` | `if x > 5 { ... }` |
 | **Repeat Loop** | `repeat 10 times ... end repeat` | `repeat 10 times { ... }` |
 | **For Loop** | `for each x in list ... end for` | `for each x in list { ... }` |
-| **While Loop** | `while condition ... end while` | `while condition { ... }` |
+| **While Loop** | `while condition loop ... end while` | `while condition loop { ... }` |
 | **Function** | `to func ... end function` | `function func() { ... }` |
 | **Try-Catch** | `try ... catch ... end try` | `try { ... } catch { ... }` |
 
@@ -474,7 +474,7 @@ for i = 1 to 10 loop {
 }
 
 // While loop
-while x < 100 {
+while x < 100 loop {
     x = x + 1
 }
 ```
@@ -2030,13 +2030,13 @@ end for
 
 #### While Loop (Advanced)
 ```javascript
-while condition
+while condition loop
     // code
 end while
 
 do
     // code
-while condition
+while condition loop
 ```
 
 ### Loop Control
