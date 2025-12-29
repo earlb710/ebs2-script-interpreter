@@ -132,7 +132,7 @@ if x is greater than 10 then
 end if
 
 // Instead of: function add(a, b) { return a + b; }
-to add numbers a and b
+function add(a as number, b as number) as number
     return a + b
 end function
 
@@ -345,39 +345,42 @@ end repeat
 
 #### Simple Functions
 ```javascript
-to greet
+function greet() {
     print "Hello World"
-end function
+}
 
 // Call it
-call greet
+greet()
 ```
 
 #### Functions with Parameters
 ```javascript
-to greet person
+procedure greet(person as text) {
     print "Hello " + person
-end function
+}
 
-call greet with "Alice"
+greet("Alice")
 ```
 
 #### Functions with Multiple Parameters
 ```javascript
-to add numbers a and b
+function add(a as number, b as number) as number {
     return a + b
-end function
+}
 
-var result = call add with a:5 and b:3
+var result = add(5, 3)
 ```
 
 #### Functions with Return Values
 ```javascript
-to calculate sum of numbers
+function calculateSum(numbers as array.number) as number {
     var total = 0
     for each num in numbers
         total = total + num
     end for
+    return total
+}
+```
     return total
 end
 ```

@@ -76,7 +76,7 @@ var x = 10  // Comment after code
 ```
 program     end         var         variable    as          is
 if          then        else        repeat      times
-for         each        in          to          call
+for         each        in          to          loop        call
 with        and         return      print
 log         hide        ask         screen      button
 label       textbox     array       text        number
@@ -338,7 +338,7 @@ EBS2 supports both compact single-line and explicit multi-line block syntax:
 // SINGLE-LINE: No end keyword needed (optional)
 if x < 5 then print "Small"
 repeat 3 times print "Hello"
-for i from 1 to 5 print i
+for i = 1 to 5 loop print i
 
 // MULTI-LINE: Explicit end keyword required
 if x < 5 then
@@ -469,7 +469,7 @@ for each item in items {
 }
 
 // For range
-for i from 1 to 10 {
+for i = 1 to 10 loop {
     print i
 }
 
@@ -1137,6 +1137,60 @@ end if
 - Use postfix `typeof` operator: `variable typeof TypeName`
 - Type checking is case-insensitive
 - Field names must be unique across the inheritance chain
+
+### Record Methods
+
+Records support several built-in methods for manipulation and inspection:
+
+```javascript
+// Get list of field names
+var person = record { name: "Alice", age: 30, city: "NYC" }
+var fields = person.fields()                 // {"name", "age", "city"}
+
+// Check if field exists
+var hasAge = person.hasField("age")          // true
+var hasEmail = person.hasField("email")      // false
+
+// Get field value dynamically
+var fieldName = "name"
+var value = person.getField(fieldName)       // "Alice"
+
+// Set field value dynamically
+person.setField("age", 31)                   // person.age is now 31
+
+// Add new field to record
+person.addField("email", "alice@example.com")
+// person now has: name, age, city, email
+
+// Remove field from record
+person.removeField("city")
+// person now has: name, age, email
+
+// Copy record (shallow copy)
+var personCopy = person.copy()
+personCopy.name = "Bob"                      // person.name is still "Alice"
+
+// Merge records (combine fields from multiple records)
+var contact = record { phone: "555-1234", email: "old@example.com" }
+var merged = person.merge(contact)
+// merged has: name, age, email (from person), phone (from contact)
+// Note: person.email takes precedence over contact.email
+
+// Get record as JSON string
+var json = person.toJSON()                   // '{"name":"Alice","age":31,"email":"alice@example.com"}'
+
+// Create record from JSON string
+var fromJSON = record.fromJSON(json)
+```
+
+**Record Method Benefits:**
+- ✅ **Dynamic access** - Access fields by name at runtime
+- ✅ **Introspection** - Discover record structure programmatically
+- ✅ **Flexible manipulation** - Add/remove fields as needed
+- ✅ **Serialization** - Convert to/from JSON for storage or transmission
+- ✅ **Copying** - Create independent copies of records
+- ✅ **Merging** - Combine data from multiple records
+
 
 #### map
 ```javascript
@@ -1911,17 +1965,17 @@ end for
 #### Numeric Range (Advanced)
 ```javascript
 // Count from 1 to 10
-for counter from 1 to 10
+for counter = 1 to 10 loop
     print counter
 end for
 
 // Count with step
-for counter from 0 to 100 by 10
+for counter = 0 to 100 step 10 loop
     print counter     // 0, 10, 20, ..., 100
 end for
 
 // Count backwards
-for counter from 10 down to 1
+for counter = 10 down to 1 loop
     print counter
 end for
 ```
@@ -1941,7 +1995,7 @@ while condition
 
 ```javascript
 // Exit loop early
-for counter from 1 to 100
+for counter = 1 to 100 loop
     if counter = 50 then
         exit loop        // or: break
     end if
@@ -1960,13 +2014,13 @@ end for
 
 EBS2 distinguishes between **functions** (which return values) and **procedures** (which don't return values).
 
-**IMPORTANT:** All function and procedure definitions and calls **MUST include parentheses `()`**, even when there are no parameters.
+**IMPORTANT:** All function and procedure definitions and calls **MUST include parentheses `()`**, even when there are no parameters. All function declarations **MUST start with the `function` or `procedure` keyword**.
 
 ### Function vs Procedure
 
 **Function** - Has parameters and returns a value:
 ```javascript
-// Short form - function with return type (parentheses required)
+// Function with return type (parentheses required)
 function calculateScore(points as number) as number {
     return points * 10
 }
@@ -1976,11 +2030,6 @@ function getDefaultScore() as number {
     return 100
 }
 
-// Long form - function with returns clause
-to calculateScore points as number returns number
-    return points * 10
-end function
-
 // Usage - returns a value (parentheses required)
 var score = calculateScore(50)  // score = 500
 var default = getDefaultScore() // Parentheses required even with no params
@@ -1988,7 +2037,7 @@ var default = getDefaultScore() // Parentheses required even with no params
 
 **Procedure** - Has parameters but does NOT return a value:
 ```javascript
-// Short form - procedure (no return type, parentheses required)
+// Procedure (no return type, parentheses required)
 procedure displayMessage(message as text) {
     print message
     log "Message displayed"
@@ -1998,12 +2047,6 @@ procedure displayMessage(message as text) {
 procedure showWelcome() {
     print "Welcome to EBS2!"
 }
-
-// Long form - procedure (no returns clause)
-to displayMessage message as text
-    print message
-    log "Message displayed"
-end procedure
 
 // Usage - just executes, no return value (parentheses required)
 displayMessage("Hello World")
@@ -2015,7 +2058,6 @@ showWelcome()  // Parentheses required even with no params
 | Feature | Function | Procedure |
 |---------|----------|-----------|
 | **Definition** | `function name(params) as returnType` or `function name() as returnType` | `procedure name(params)` or `procedure name()` |
-| **Long Form** | `to name params returns type` | `to name params` (no returns) |
 | **Returns Value** | Yes (must use `return`) | No (no `return` statement) |
 | **Usage** | `var result = funcName(args)` or `funcName()` | `procName(args)` or `procName()` |
 | **Purpose** | Calculate and return values | Perform actions/side effects |
@@ -2032,19 +2074,35 @@ showWelcome()  // Parentheses required even with no params
 
 ### Definition Forms
 
-| Long Form (Natural) | Short Form (Traditional) |
-|---------------------|--------------------------|
-| `to functionName param returns type` | `function functionName(param) as type` |
-| `to functionName returns type` (no params) | `function functionName() as type` |
-| `to procedureName param` | `procedure procedureName(param)` |
-| `to procedureName` (no params) | `procedure procedureName()` |
-| `return value` | `return value` |
-| `call functionName with value` | `functionName(value)` |
-| `call functionName` (no params) | `functionName()` |
+All functions and procedures must be declared using the `function` or `procedure` keyword:
 
-**Both forms are equivalent and can be mixed.** Choose based on your audience and preference.
+```javascript
+// Functions (return values)
+function functionName(param as type) as returnType
+    return value
+end function
 
-**Note:** Parentheses `()` are **always required** in short form, even when there are no parameters.
+function functionName() as returnType  // no params
+    return value
+end function
+
+// Procedures (no return values)
+procedure procedureName(param as type)
+    // code
+end procedure
+
+procedure procedureName()  // no params
+    // code
+end procedure
+
+// Calling functions and procedures
+var result = functionName(value)
+functionName()  // discard return value
+procedureName(value)
+procedureName()
+```
+
+**Note:** Parentheses `()` are **always required** in function and procedure definitions and calls, even when there are no parameters.
 
 ### Simple Functions (Beginner)
 
@@ -3005,6 +3063,21 @@ var result = numbers.addFirst(0)             // {0, 1, 2, 3} - add at start
 
 // Remove from array (returns new array)
 var result = numbers.remove(1)               // {1, 3} - remove element at index 1
+```
+
+**Array Size Manipulation:**
+```javascript
+// Fill array with a value
+var filled = {}.fill(0, 5)                   // {0, 0, 0, 0, 0} - create array of 5 zeros
+var replaced = {1, 2, 3}.fill(0)             // {0, 0, 0} - fill existing array with 0
+
+// Expand array (add elements to end)
+var expanded = {1, 2, 3}.expand(2)           // {1, 2, 3, 0, 0} - add 2 zero elements
+var expanded = {1, 2, 3}.expand(2, 9)        // {1, 2, 3, 9, 9} - add 2 elements with value 9
+
+// Shrink array (remove elements from end)
+var shrunk = {1, 2, 3, 4, 5}.shrink(2)       // {1, 2, 3} - remove last 2 elements
+var shrunk = {1, 2, 3}.shrink(5)             // {} - shrink more than length returns empty array
 ```
 
 **Reverse:**
