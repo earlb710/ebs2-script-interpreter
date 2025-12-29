@@ -25,11 +25,13 @@ import java.util.Map;
 public class Lexer {
     private final String source;
     private final List<Token> tokens;
+    private final List<LexerException> errors;
     private int start = 0;
     private int current = 0;
     private int line = 1;
     private int column = 1;
     private int tokenStartColumn = 1;
+    private boolean hadError = false;
     
     // Keywords map (case-insensitive)
     private static final Map<String, TokenType> KEYWORDS = new HashMap<>();
@@ -163,10 +165,12 @@ public class Lexer {
     public Lexer(String source) {
         this.source = source;
         this.tokens = new ArrayList<>();
+        this.errors = new ArrayList<>();
     }
     
     /**
      * Scans the entire source code and returns a list of tokens.
+     * Continues scanning even after errors to find all issues.
      * 
      * @return List of tokens
      */
@@ -174,11 +178,35 @@ public class Lexer {
         while (!isAtEnd()) {
             start = current;
             tokenStartColumn = column;
-            scanToken();
+            try {
+                scanToken();
+            } catch (Exception e) {
+                // Error recovery: log error and skip to next character
+                reportError("Unexpected error: " + e.getMessage());
+                advance(); // Skip problematic character
+            }
         }
         
-        tokens.add(new Token(TokenType.EOF, "", line, column));
+        tokens.add(new Token(TokenType.EOF, "", line, column, current, current));
         return tokens;
+    }
+    
+    /**
+     * Gets all lexer errors encountered during scanning.
+     * 
+     * @return List of lexer errors
+     */
+    public List<LexerException> getErrors() {
+        return errors;
+    }
+    
+    /**
+     * Checks if any errors were encountered during scanning.
+     * 
+     * @return true if errors were found
+     */
+    public boolean hadError() {
+        return hadError;
     }
     
     /**
@@ -330,6 +358,8 @@ public class Lexer {
                 } else if (isAlpha(c)) {
                     scanIdentifier();
                 } else {
+                    // Error recovery: report but continue
+                    reportError("Unexpected character: '" + c + "'");
                     addToken(TokenType.ILLEGAL);
                 }
                 break;
@@ -370,8 +400,9 @@ public class Lexer {
         }
         
         if (isAtEnd()) {
-            // Unterminated string - add error token
-            addToken(TokenType.ILLEGAL);
+            // Unterminated string - report error but create token anyway for error recovery
+            reportError("Unterminated string");
+            addToken(TokenType.TEXT, value.toString());
             return;
         }
         
@@ -406,6 +437,7 @@ public class Lexer {
                 addToken(TokenType.NUMBER, Integer.parseInt(text));
             }
         } catch (NumberFormatException e) {
+            reportError("Invalid number format: " + text);
             addToken(TokenType.ILLEGAL);
         }
     }
@@ -572,7 +604,21 @@ public class Lexer {
     
     private void addToken(TokenType type, Object literal) {
         String text = source.substring(start, current);
-        tokens.add(new Token(type, text, literal, line, tokenStartColumn));
+        tokens.add(new Token(type, text, literal, line, tokenStartColumn, start, current));
+    }
+    
+    /**
+     * Reports a lexical error and stores it for later retrieval.
+     * The lexer continues scanning to find more errors.
+     * 
+     * @param message The error message
+     */
+    private void reportError(String message) {
+        hadError = true;
+        LexerException error = new LexerException(message, line, tokenStartColumn);
+        errors.add(error);
+        // Optionally print to stderr for immediate feedback
+        System.err.println(error.getMessage());
     }
     
     /**

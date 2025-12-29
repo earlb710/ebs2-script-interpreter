@@ -8,7 +8,7 @@ import java.util.List;
  * This is a basic manual test to verify the lexer functionality.
  * Can be run with: java com.eb.script.lexer.LexerTest
  * 
- * @version 2.0.0
+ * @version 2.1.0
  * @since 2025-12-29
  */
 public class LexerTest {
@@ -24,6 +24,7 @@ public class LexerTest {
         testFunctionSyntax();
         testArraySyntax();
         testBuiltinFunctions();
+        testErrorRecovery();
         
         System.out.println("\n=== All Tests Completed ===");
     }
@@ -38,7 +39,9 @@ public class LexerTest {
         assert tokens.size() == 7; // 6 keywords + EOF
         assert tokens.get(0).getType() == TokenType.PROGRAM;
         assert tokens.get(1).getType() == TokenType.VAR;
-        System.out.println("✓ Passed\n");
+        assert tokens.get(0).getStartPos() == 0;
+        assert tokens.get(0).getEndPos() == 7;
+        System.out.println("✓ Passed (with position tracking)\n");
     }
     
     private static void testNumbers() {
@@ -131,6 +134,36 @@ public class LexerTest {
         assert foundToText : "toText should be recognized as BUILTIN_FUNCTION";
         assert foundToNumber : "toNumber should be recognized as BUILTIN_FUNCTION";
         System.out.println("✓ Passed (toText, toNumber recognized as BUILTIN_FUNCTION)\n");
+    }
+    
+    private static void testErrorRecovery() {
+        System.out.println("Test 9: Error Recovery");
+        String source = "var x = 10\nvar y = \"unterminated\nvar z = 20";
+        Lexer lexer = new Lexer(source);
+        List<Token> tokens = lexer.scanTokens();
+        
+        printTokens(tokens);
+        
+        // Check that lexer found errors
+        assert lexer.hadError() : "Lexer should have detected errors";
+        assert !lexer.getErrors().isEmpty() : "Error list should not be empty";
+        
+        System.out.println("Errors found: " + lexer.getErrors().size());
+        for (LexerException error : lexer.getErrors()) {
+            System.out.println("  - " + error.getMessage());
+        }
+        
+        // Check that lexer continued and found var z = 20
+        boolean foundZ = false;
+        for (Token token : tokens) {
+            if (token.getType() == TokenType.IDENTIFIER && token.getLexeme().equals("z")) {
+                foundZ = true;
+                break;
+            }
+        }
+        
+        assert foundZ : "Lexer should have recovered and found 'z' identifier";
+        System.out.println("✓ Passed (error recovery working)\n");
     }
     
     private static void printTokens(List<Token> tokens) {

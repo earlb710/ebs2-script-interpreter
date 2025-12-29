@@ -6,10 +6,13 @@ package com.eb.script.lexer;
  * A token consists of:
  * - type: The type of token (keyword, identifier, operator, etc.)
  * - lexeme: The actual text from the source code
+ * - literal: The literal value (for numbers, strings, booleans)
  * - line: The line number where the token appears
  * - column: The column position where the token starts
+ * - startPos: The absolute start position in the source file
+ * - endPos: The absolute end position in the source file
  * 
- * @version 2.0.0
+ * @version 2.1.0
  * @since 2025-12-29
  */
 public class Token {
@@ -18,22 +21,28 @@ public class Token {
     private final Object literal;
     private final int line;
     private final int column;
+    private final int startPos;
+    private final int endPos;
     
     /**
-     * Constructs a new Token.
+     * Constructs a new Token with full position information.
      * 
      * @param type The type of the token
      * @param lexeme The text representation of the token
      * @param literal The literal value (for numbers, strings, booleans)
      * @param line The line number (1-based)
      * @param column The column position (1-based)
+     * @param startPos The absolute start position in the source (0-based)
+     * @param endPos The absolute end position in the source (0-based, exclusive)
      */
-    public Token(TokenType type, String lexeme, Object literal, int line, int column) {
+    public Token(TokenType type, String lexeme, Object literal, int line, int column, int startPos, int endPos) {
         this.type = type;
         this.lexeme = lexeme;
         this.literal = literal;
         this.line = line;
         this.column = column;
+        this.startPos = startPos;
+        this.endPos = endPos;
     }
     
     /**
@@ -43,9 +52,11 @@ public class Token {
      * @param lexeme The text representation of the token
      * @param line The line number (1-based)
      * @param column The column position (1-based)
+     * @param startPos The absolute start position in the source (0-based)
+     * @param endPos The absolute end position in the source (0-based, exclusive)
      */
-    public Token(TokenType type, String lexeme, int line, int column) {
-        this(type, lexeme, null, line, column);
+    public Token(TokenType type, String lexeme, int line, int column, int startPos, int endPos) {
+        this(type, lexeme, null, line, column, startPos, endPos);
     }
     
     // Getters
@@ -68,6 +79,23 @@ public class Token {
     
     public int getColumn() {
         return column;
+    }
+    
+    public int getStartPos() {
+        return startPos;
+    }
+    
+    public int getEndPos() {
+        return endPos;
+    }
+    
+    /**
+     * Gets the length of the token in characters.
+     * 
+     * @return The length of the token
+     */
+    public int getLength() {
+        return endPos - startPos;
     }
     
     /**
@@ -114,11 +142,11 @@ public class Token {
     @Override
     public String toString() {
         if (literal != null) {
-            return String.format("Token(%s, '%s', %s, %d:%d)", 
-                type, lexeme, literal, line, column);
+            return String.format("Token(%s, '%s', %s, %d:%d, pos %d-%d)", 
+                type, lexeme, literal, line, column, startPos, endPos);
         }
-        return String.format("Token(%s, '%s', %d:%d)", 
-            type, lexeme, line, column);
+        return String.format("Token(%s, '%s', %d:%d, pos %d-%d)", 
+            type, lexeme, line, column, startPos, endPos);
     }
     
     @Override
@@ -129,6 +157,8 @@ public class Token {
         Token token = (Token) obj;
         return line == token.line &&
                column == token.column &&
+               startPos == token.startPos &&
+               endPos == token.endPos &&
                type == token.type &&
                lexeme.equals(token.lexeme);
     }
@@ -139,6 +169,8 @@ public class Token {
         result = 31 * result + lexeme.hashCode();
         result = 31 * result + line;
         result = 31 * result + column;
+        result = 31 * result + startPos;
+        result = 31 * result + endPos;
         return result;
     }
 }
