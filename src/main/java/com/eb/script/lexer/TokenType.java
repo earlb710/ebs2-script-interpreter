@@ -146,6 +146,9 @@ public enum TokenType {
     IS_GREATER_EQUAL,    // "is greater than or equal to"
     IS_LESS_EQUAL,       // "is less than or equal to"
     
+    // Built-in functions (for syntax highlighting)
+    BUILTIN_FUNCTION,
+    
     // Error token
     ILLEGAL
 }

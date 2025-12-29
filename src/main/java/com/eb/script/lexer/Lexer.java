@@ -111,6 +111,50 @@ public class Lexer {
         KEYWORDS.put("mod", TokenType.MOD);
     }
     
+    // Built-in functions (case-insensitive, for syntax highlighting)
+    private static final String[] BUILTIN_FUNCTIONS = {
+        // Type conversion
+        "toText", "toNumber", "toInt", "toFlag", "toDate",
+        
+        // Text operations
+        "toUpper", "toLower", "toUpperCase", "toLowerCase",
+        "trim", "trimLeft", "trimRight", "trimStart", "trimEnd",
+        "substring", "substr", "head", "tail", "lead",
+        "split", "join", "replace", "replaceFirst", "replaceAll", "replaceLast",
+        "find", "findFirst", "findLast", "contains", "indexOf", "lastIndexOf",
+        "startsWith", "endsWith", "charAt",
+        "padLeft", "padRight", "padCenter",
+        "reverse",
+        
+        // Array operations
+        "append", "add", "addFirst", "remove", "removeAt",
+        "sort", "reverseSort", "reverse",
+        "copy", "slice", "fill", "expand", "shrink",
+        "first", "last", "isEmpty",
+        "findFirst", "findLast", "contains",
+        
+        // Record operations
+        "fields", "hasField", "getField", "setField",
+        "addField", "removeField", "merge", "copy",
+        "toJSON", "fromJSON",
+        
+        // Math functions
+        "abs", "ceil", "floor", "round", "sqrt", "pow",
+        "min", "max", "random",
+        "sin", "cos", "tan", "asin", "acos", "atan", "atan2",
+        "exp", "log", "log10",
+        
+        // Date operations
+        "today", "now", "year", "month", "day", 
+        "hour", "minute", "second",
+        "addDays", "addMonths", "addYears",
+        "diffDays", "diffMonths", "diffYears",
+        
+        // Console/UI
+        "print", "println", "log", "clear",
+        "ask", "askNumber", "askYesNo", "askChoice"
+    };
+    
     /**
      * Constructs a new Lexer with the given source code.
      * 
@@ -403,7 +447,12 @@ public class Lexer {
         // Check if it's a keyword (case-insensitive)
         TokenType type = KEYWORDS.get(text.toLowerCase());
         if (type == null) {
-            type = TokenType.IDENTIFIER;
+            // Check if it's a built-in function (case-insensitive)
+            if (isBuiltinFunction(text)) {
+                type = TokenType.BUILTIN_FUNCTION;
+            } else {
+                type = TokenType.IDENTIFIER;
+            }
         }
         
         // For TRUE and FALSE keywords, add boolean literal value
@@ -414,6 +463,21 @@ public class Lexer {
         } else {
             addToken(type);
         }
+    }
+    
+    /**
+     * Checks if the given identifier is a built-in function name.
+     * 
+     * @param name The identifier to check (case-insensitive)
+     * @return true if it's a built-in function
+     */
+    private boolean isBuiltinFunction(String name) {
+        for (String func : BUILTIN_FUNCTIONS) {
+            if (func.equalsIgnoreCase(name)) {
+                return true;
+            }
+        }
+        return false;
     }
     
     /**

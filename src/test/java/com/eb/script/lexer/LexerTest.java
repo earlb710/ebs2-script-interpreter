@@ -23,6 +23,7 @@ public class LexerTest {
         testLoopSyntax();
         testFunctionSyntax();
         testArraySyntax();
+        testBuiltinFunctions();
         
         System.out.println("\n=== All Tests Completed ===");
     }
@@ -102,6 +103,34 @@ public class LexerTest {
         
         printTokens(tokens);
         System.out.println("✓ Passed\n");
+    }
+    
+    private static void testBuiltinFunctions() {
+        System.out.println("Test 8: Built-in Functions");
+        String source = "var text = name.toText()\nvar num = value.toNumber()\nprint(\"Hello\")";
+        Lexer lexer = new Lexer(source);
+        List<Token> tokens = lexer.scanTokens();
+        
+        printTokens(tokens);
+        
+        // Verify that toText, toNumber, and print are recognized as built-in functions
+        boolean foundToText = false;
+        boolean foundToNumber = false;
+        boolean foundPrint = false;
+        
+        for (Token token : tokens) {
+            if (token.getType() == TokenType.BUILTIN_FUNCTION) {
+                if (token.getLexeme().equalsIgnoreCase("toText")) foundToText = true;
+                if (token.getLexeme().equalsIgnoreCase("toNumber")) foundToNumber = true;
+            }
+            if (token.getType() == TokenType.PRINT) {
+                foundPrint = true;
+            }
+        }
+        
+        assert foundToText : "toText should be recognized as BUILTIN_FUNCTION";
+        assert foundToNumber : "toNumber should be recognized as BUILTIN_FUNCTION";
+        System.out.println("✓ Passed (toText, toNumber recognized as BUILTIN_FUNCTION)\n");
     }
     
     private static void printTokens(List<Token> tokens) {
