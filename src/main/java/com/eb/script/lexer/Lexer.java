@@ -181,8 +181,8 @@ public class Lexer {
             try {
                 scanToken();
             } catch (Exception e) {
-                // Error recovery: log error and skip to next character
-                reportError("Unexpected error: " + e.getMessage());
+                // Error recovery: log internal error with stack trace and skip to next character
+                reportInternalError(e);
                 advance(); // Skip problematic character
             }
         }
@@ -618,6 +618,38 @@ public class Lexer {
         LexerException error = new LexerException(message, line, tokenStartColumn);
         errors.add(error);
         // Optionally print to stderr for immediate feedback
+        System.err.println(error.getMessage());
+    }
+    
+    /**
+     * Reports an internal error (unexpected exception) and stores it for later retrieval.
+     * Logs the exception message and the first 3 lines of the stack trace.
+     * The lexer continues scanning to find more errors.
+     * 
+     * @param exception The exception that was caught
+     */
+    private void reportInternalError(Exception exception) {
+        hadError = true;
+        
+        // Build error message with exception details
+        StringBuilder message = new StringBuilder();
+        message.append("Internal error: ").append(exception.getClass().getSimpleName());
+        message.append(": ").append(exception.getMessage());
+        
+        // Add first 3 lines of stack trace
+        StackTraceElement[] stackTrace = exception.getStackTrace();
+        int linesToLog = Math.min(3, stackTrace.length);
+        if (linesToLog > 0) {
+            message.append("\nStack trace:");
+            for (int i = 0; i < linesToLog; i++) {
+                message.append("\n  at ").append(stackTrace[i].toString());
+            }
+        }
+        
+        LexerException error = new LexerException(message.toString(), line, tokenStartColumn);
+        errors.add(error);
+        
+        // Print to stderr for immediate feedback
         System.err.println(error.getMessage());
     }
     
