@@ -22,7 +22,7 @@ import java.util.Map;
  * @version 2.0.0
  * @since 2025-12-29
  */
-public class Lexer {
+public class Lexer implements ILexer {
     private final String source;
     private final List<Token> tokens;
     private final List<LexerException> errors;
@@ -174,6 +174,7 @@ public class Lexer {
      * 
      * @return List of tokens
      */
+    @Override
     public List<Token> scanTokens() {
         while (!isAtEnd()) {
             start = current;
@@ -196,6 +197,7 @@ public class Lexer {
      * 
      * @return List of lexer errors
      */
+    @Override
     public List<LexerException> getErrors() {
         return errors;
     }
@@ -205,6 +207,7 @@ public class Lexer {
      * 
      * @return true if errors were found
      */
+    @Override
     public boolean hadError() {
         return hadError;
     }

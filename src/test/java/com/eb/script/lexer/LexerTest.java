@@ -38,8 +38,8 @@ public class LexerTest {
         
         printTokens(tokens);
         assert tokens.size() == 7; // 6 keywords + EOF
-        assert tokens.get(0).getType() == TokenType.PROGRAM;
-        assert tokens.get(1).getType() == TokenType.VAR;
+        assert tokens.get(0).getTokenType() == TokenType.PROGRAM;
+        assert tokens.get(1).getTokenType() == TokenType.VAR;
         assert tokens.get(0).getStartPos() == 0;
         assert tokens.get(0).getEndPos() == 7;
         System.out.println("✓ Passed (with position tracking)\n");
@@ -62,7 +62,7 @@ public class LexerTest {
         List<Token> tokens = lexer.scanTokens();
         
         printTokens(tokens);
-        assert tokens.get(0).getType() == TokenType.TEXT;
+        assert tokens.get(0).getTokenType() == TokenType.TEXT;
         assert tokens.get(0).getLiteral().equals("Hello World");
         System.out.println("✓ Passed\n");
     }
@@ -74,8 +74,8 @@ public class LexerTest {
         List<Token> tokens = lexer.scanTokens();
         
         printTokens(tokens);
-        assert tokens.get(0).getType() == TokenType.PLUS;
-        assert tokens.get(10).getType() == TokenType.INCREMENT;
+        assert tokens.get(0).getTokenType() == TokenType.PLUS;
+        assert tokens.get(10).getTokenType() == TokenType.INCREMENT;
         System.out.println("✓ Passed\n");
     }
     
@@ -123,11 +123,11 @@ public class LexerTest {
         boolean foundPrint = false;
         
         for (Token token : tokens) {
-            if (token.getType() == TokenType.BUILTIN_FUNCTION) {
+            if (token.getTokenType() == TokenType.BUILTIN_FUNCTION) {
                 if (token.getLexeme().equalsIgnoreCase("toText")) foundToText = true;
                 if (token.getLexeme().equalsIgnoreCase("toNumber")) foundToNumber = true;
             }
-            if (token.getType() == TokenType.PRINT) {
+            if (token.getTokenType() == TokenType.PRINT) {
                 foundPrint = true;
             }
         }
@@ -157,7 +157,7 @@ public class LexerTest {
         // Check that lexer continued and found var z = 20
         boolean foundZ = false;
         for (Token token : tokens) {
-            if (token.getType() == TokenType.IDENTIFIER && token.getLexeme().equals("z")) {
+            if (token.getTokenType() == TokenType.IDENTIFIER && token.getLexeme().equals("z")) {
                 foundZ = true;
                 break;
             }
@@ -195,7 +195,7 @@ public class LexerTest {
     
     private static void printTokens(List<Token> tokens) {
         for (Token token : tokens) {
-            if (token.getType() != TokenType.EOF) {
+            if (token.getTokenType() != TokenType.EOF) {
                 System.out.println("  " + token);
             }
         }

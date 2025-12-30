@@ -15,7 +15,7 @@ package com.eb.script.lexer;
  * @version 2.1.0
  * @since 2025-12-29
  */
-public class Token {
+public class Token implements IToken {
     private final TokenType type;
     private final String lexeme;
     private final Object literal;
@@ -61,8 +61,21 @@ public class Token {
     
     // Getters
     
-    public TokenType getType() {
+    /**
+     * Gets the token type enum.
+     * @return The TokenType enum value
+     */
+    public TokenType getTokenType() {
         return type;
+    }
+    
+    /**
+     * Gets the token type as a string (implements IToken interface).
+     * @return The token type name as a string
+     */
+    @Override
+    public String getType() {
+        return type.name();
     }
     
     public String getLexeme() {
