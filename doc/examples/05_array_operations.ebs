@@ -99,10 +99,28 @@ main
     print "Sort → Reverse: " + processed.toText()
     print ""
     
+    // Fixed-size vs Dynamic arrays
+    print "=== Fixed-Size Arrays ==="
+    var dynamicArray as array = {1, 2, 3}
+    print "Dynamic array: " + dynamicArray.toText()
+    dynamicArray.append(4)
+    print "After append(4): " + dynamicArray.toText()
+    
+    var fixedArray as array[5] = {10, 20, 30, 40, 50}
+    print "Fixed-size array[5]: " + fixedArray.toText()
+    print "Fixed array length: " + fixedArray.length.toText()
+    fixedArray[0] = 15
+    print "After fixedArray[0] = 15: " + fixedArray.toText()
+    // Note: Cannot append, remove, expand, or shrink fixed-size arrays
+    
+    var board as array.number[9] = {}.fill(0, 9)
+    print "Game board (3x3): " + board.toText()
+    print ""
+    
     // Array iteration
     print "=== Array Iteration ==="
     var fruits = {"Apple", "Banana", "Cherry"}
-    for i = 0 to fruits.length - 1 then
+    for i = 0 to fruits.length - 1 loop
         print (i + 1).toText() + ". " + fruits[i]
     end for
     print ""

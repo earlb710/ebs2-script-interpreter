@@ -213,6 +213,25 @@ repeat 5 times
 end repeat
 ```
 
+### For Loop
+
+```javascript
+// Numeric range
+for i = 1 to 10 loop
+    print i
+end for
+
+// With step
+for i = 0 to 100 step 10 loop
+    print i
+end for
+
+// Count down
+for i = 10 down to 1 loop
+    print i
+end for
+```
+
 ### For Each
 
 ```javascript
@@ -228,10 +247,10 @@ end for
 ```javascript
 var count = 5
 
-repeat while count > 0
+while count > 0 loop
     print count
     count = count - 1
-end repeat
+end while
 ```
 
 ---
@@ -241,35 +260,37 @@ end repeat
 ### Functions (Return Values)
 
 ```javascript
-// Short form
+// Function with parameters
 function add(a as number, b as number) as number {
     return a + b
 }
 
-// Long form
-to add a as number and b as number returns number
-    return a + b
-end function
+// Function with no parameters
+function getDefaultScore() as number {
+    return 100
+}
 
 // Usage
 var sum = add(5, 3)
+var score = getDefaultScore()
 ```
 
 ### Procedures (No Return Value)
 
 ```javascript
-// Short form
+// Procedure with parameters
 procedure greet(name as text) {
     print "Hello " + name
 }
 
-// Long form
-to greet person as text
-    print "Hello " + person
-end procedure
+// Procedure with no parameters
+procedure showWelcome() {
+    print "Welcome to EBS2!"
+}
 
 // Usage
 greet("Alice")
+showWelcome()
 ```
 
 ---
@@ -297,6 +318,21 @@ var size = numbers.length     // 5
 // Typed arrays
 var names as array.text = "Alice", "Bob", "Charlie"
 var scores as array.number = 85, 90, 95
+
+// Fixed-size arrays (size cannot change)
+var fixedArray as array[5] = {1, 2, 3, 4, 5}
+var fixedNames as array.text[3] = {"Alice", "Bob", "Charlie"}
+var board as array.number[9] = {}.fill(0, 9)  // 3x3 grid
+
+// Array methods
+var filled = {}.fill(0, 5)                   // {0, 0, 0, 0, 0}
+var expanded = {1, 2, 3}.expand(2)           // {1, 2, 3, 0, 0}
+var expanded = {1, 2, 3}.expand(2, 9)        // {1, 2, 3, 9, 9}
+var shrunk = {1, 2, 3, 4, 5}.shrink(2)       // {1, 2, 3}
+var part = {1, 2, 3, 4, 5}.copy(1, 4)        // {2, 3, 4}
+
+// Note: Fixed-size arrays cannot use size-changing methods
+// (append, add, remove, expand, shrink)
 ```
 
 ---
@@ -343,6 +379,18 @@ end if
 // Anonymous record
 var point as record = {x: 10, y: 20}
 print point.x                  // 10
+
+// Record methods
+var fields = person.fields()                 // {"name", "age", "email"}
+var hasAge = person.hasField("age")          // true
+var value = person.getField("name")          // "Alice"
+person.setField("age", 31)
+person.addField("phone", "555-1234")
+person.removeField("email")
+var copy = person.copy()
+var merged = person.merge(otherRecord)
+var json = person.toJSON()
+var fromJSON = record.fromJSON(json)
 ```
 
 ---
