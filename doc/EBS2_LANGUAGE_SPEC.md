@@ -307,7 +307,7 @@ end screens
 // Required: Main entry point
 main
     // Program starts here
-    print screen MainWindow
+    show screen MainWindow
 end main
 ```
 
@@ -2286,7 +2286,7 @@ end label
 
 // Show the screen
 main
-    print screen HelloScreen
+    show screen HelloScreen
 end main
 ```
 
@@ -2511,6 +2511,89 @@ canvas DrawingCanvas
 end canvas
 ```
 
+### Screen Management and Operations
+
+#### Showing and Hiding Screens
+
+```javascript
+// Show a screen
+show screen MyScreen
+
+// Show as modal (blocks other screens)
+show screen DialogScreen as modal
+
+// Show at specific position
+show screen PopupScreen at x:100 y:100
+
+// Show maximized or fullscreen
+show screen MainScreen maximized
+show screen GameScreen fullscreen
+
+// Hide a screen
+hide screen MyScreen
+
+// Hide current screen
+hide current screen
+
+// Switch to another screen
+switch to screen NewScreen
+```
+
+#### Screen State and Queries
+
+```javascript
+// Check if screen is visible
+if screen MyScreen is visible
+    print "Screen is showing"
+end if
+
+// Check if screen exists
+if screen MyScreen exists
+    hide screen MyScreen
+end if
+
+// Get current screen name
+var currentScreen = get current screen
+print "Current screen: " + currentScreen
+```
+
+#### Screen Serialization (JSON)
+
+Use `print <ScreenName>` (without `screen` keyword) to output JSON for save/load operations:
+
+```javascript
+screen MyScreen
+    title "Sample Screen"
+    width 800
+    height 600
+    
+    label WelcomeLabel
+        text "Welcome!"
+    end label
+end screen
+
+// Output screen as JSON string
+print MyScreen
+
+// Convert screen to JSON for saving
+var screenJson = MyScreen.toJSON()
+write screenJson to file "screens/myscreen.json"
+
+// Load screen from JSON
+var jsonData = read file "screens/myscreen.json"
+var loadedScreen = screen.fromJSON(jsonData)
+show screen loadedScreen
+```
+
+**Use Cases for Screen JSON:**
+- Save and load screen definitions
+- Create screen templates
+- Generate screens dynamically
+- Version control for screen designs
+- Network transmission of screen layouts
+
+**Important:** The normal screen definition language is the primary way to create screens. JSON serialization is for programmatic manipulation, templates, and persistence.
+
 ## Error Handling
 
 ### Automatic Error Handling (Beginner)
@@ -2593,6 +2676,9 @@ print line "Hello World"
 // Print without new line
 print "Hello " then print "World"
 
+// Print screen as JSON (for serialization, save/load)
+print MyScreen              // Outputs JSON representation of screen
+
 // Log to debug log (writes to log file, viewable in debug view)
 log "Debug message"
 log "Variable value:", myVariable
@@ -2603,6 +2689,8 @@ clear screen
 
 **Note:** 
 - `print` outputs to the main display (HTML document or JavaFX text area)
+- `print <ScreenName>` (without `screen` keyword) outputs the JSON representation of a screen for serialization
+- `show screen <ScreenName>` is used to display/show a screen on the UI
 - `log` writes to a debug log file and debug view (available on both HTML5 and JavaFX)
 - Both commands work identically across HTML5 and JavaFX platforms
 
@@ -3842,7 +3930,7 @@ See section [Built-in Functions](#built-in-functions) for detailed documentation
 - List Operations (count, filter, sort, ...)
 - Date/Time (today, current time, format, ...)
 - File Operations (read, write, exists, ...)
-- Screen Operations (print screen, hide screen, ...)
+- Screen Operations (show screen, hide screen, print JSON, ...)
 
 ### Appendix D: Migration Checklist
 

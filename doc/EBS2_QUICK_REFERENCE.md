@@ -416,7 +416,7 @@ screen MyWindow
 end screen
 
 main
-    print screen MyWindow
+    show screen MyWindow
 end main
 ```
 
@@ -429,6 +429,23 @@ end main
 | `textbox` | Text input | `placeholder "Enter name"` |
 | `numberbox` | Number input | `minimum 0, maximum 100` |
 | `checkbox` | Toggle option | `checked yes/no` |
+
+### Screen Operations
+
+```javascript
+// Show screen on UI
+show screen MyScreen
+
+// Hide screen
+hide screen MyScreen
+
+// Print screen as JSON (for save/load)
+print MyScreen              // Outputs JSON
+var json = MyScreen.toJSON()
+var loaded = screen.fromJSON(json)
+```
+
+**Note:** Use `show screen` to display screens. Use `print <ScreenName>` (without `screen`) to output JSON for serialization.
 
 ---
 

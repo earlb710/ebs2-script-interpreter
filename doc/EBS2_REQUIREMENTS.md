@@ -259,7 +259,7 @@ end
 
 // Section 5: Main code (required)
 main
-    print screen MainWindow
+    show screen MainWindow
 end
 ```
 
@@ -401,7 +401,7 @@ screen MyWindow
 end
 
 // Show it
-print screen MyWindow
+show screen MyWindow
 ```
 
 #### Advanced Window with Layout
