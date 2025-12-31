@@ -345,13 +345,13 @@ record type PersonType
     name as text
     age as number
     email as text
-end record
+end type
 
 // Extend record with more fields
 record type EmployeeType extends PersonType
     employeeId as number
     department as text
-end record
+end type
 
 var person as PersonType = {
     name: "Alice",
@@ -576,7 +576,7 @@ end if
 // With named record types
 record type PersonType
     name as text
-end record
+end type
 
 var person as PersonType = record { name: "Bob" }
 

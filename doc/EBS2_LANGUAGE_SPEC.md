@@ -430,7 +430,7 @@ EBS2 supports curly braces `{}` as an alternative to the explicit `end` keywords
 | **Screen** | `screen MyScreen ... end screen` | `screen MyScreen { ... }` |
 | **Label** | `label MyLabel ... end label` | `label MyLabel { ... }` |
 | **Button** | `button MyBtn ... end button` | `button MyBtn { ... }` |
-| **Record Type** | `record type Person ... end` | `record type Person { ... }` |
+| **Record Type** | `record type Person ... end type` | `record type Person { ... }` |
 
 **Note:** You can mix and match styles within your code. Choose the style that feels most comfortable for each situation.
 
@@ -837,7 +837,7 @@ record type Person
     name as text
     age as number
     email as text
-end function
+end type
 
 // Alternative with curly braces
 record type Student {
@@ -870,7 +870,7 @@ record type Address
     street as text
     city as text
     zipCode as text
-end function
+end type
 
 record type Employee {
     name as text
@@ -898,7 +898,7 @@ record type Team
     name as text
     members as array.text
     scores as array.number
-end label
+end type
 
 var team as Team = record {
     name: "Tigers",
@@ -921,7 +921,7 @@ record type Course
     instructor as text
     students as array.record(Student)
     grades as array.number
-end record
+end type
 
 var course as Course = record {
     title: "Math 101",
@@ -1069,7 +1069,7 @@ record type Student
     name as text
     age as number
     grade as number
-end function
+end type
 
 var students as array.record(Student) = {
     record { name: "Alice", age: 10, grade: 95 },
@@ -1123,20 +1123,20 @@ for each point in points {
 record type PersonType
     name as text
     age as number
-end record
+end type
 
 // Extend PersonType with additional fields
 record type EmployeeType extends PersonType
     employeeId as number
     department as text
     salary as number
-end record
+end type
 
 // Extend EmployeeType further
 record type ManagerType extends EmployeeType
     teamSize as number
     budget as number
-end record
+end type
 
 // Create instances
 var emp as EmployeeType = record {
@@ -3680,7 +3680,7 @@ var students as array.record(StudentType) = { /* ... */ }
 record type PersonType
     name as text
     age as number
-end record
+end type
 
 var employee as PersonType = record { name: "Alice", age: 30 }
 
