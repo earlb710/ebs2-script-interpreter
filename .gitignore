@@ -25,3 +25,32 @@ replay_pid*
 
 # Maven build directory
 target/
+
+# Maven shade plugin
+dependency-reduced-pom.xml
+
+# IDE files
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# NetBeans
+nbproject/private/
+nbbuild/
+dist/
+nbdist/
+
+# Eclipse
+.project
+.classpath
+.settings/
+
+# Temporary files
+*.tmp
+*.bak
+*.backup
+~*
