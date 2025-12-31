@@ -218,15 +218,15 @@ public class JSONFunctions {
                         case 'u':
                             // Unicode escape
                             advance();
-                            String hex = "";
+                            StringBuilder hexBuilder = new StringBuilder(4);
                             for (int i = 0; i < 4; i++) {
                                 if (!isHexDigit(current)) {
                                     throw new JSONParseException("Invalid unicode escape at position " + pos);
                                 }
-                                hex += current;
+                                hexBuilder.append(current);
                                 advance();
                             }
-                            sb.append((char) Integer.parseInt(hex, 16));
+                            sb.append((char) Integer.parseInt(hexBuilder.toString(), 16));
                             continue; // Already advanced
                         default:
                             throw new JSONParseException("Invalid escape sequence '\\" + current + "' at position " + pos);

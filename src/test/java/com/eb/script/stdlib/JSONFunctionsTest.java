@@ -150,6 +150,15 @@ public class JSONFunctionsTest {
     }
     
     @Test
+    @DisplayName("Parse JSON with backspace and form feed")
+    public void testParseBackspaceAndFormFeed() {
+        String jsonText = "{\"text\":\"Hello\\bWorld\\f!\"}";
+        JSONValue json = JSONFunctions.parse(jsonText);
+        
+        assertEquals("Hello\bWorld\f!", json.get("text").asString());
+    }
+    
+    @Test
     @DisplayName("Parse JSON with negative numbers")
     public void testParseNegativeNumbers() {
         String jsonText = "{\"temp\":-5.5,\"count\":-10}";
