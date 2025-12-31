@@ -31,8 +31,8 @@ public class LocalServerTest {
             assert server.isRunning() : "Server should be running after start()";
             System.out.println("  ✓ Server started successfully");
             
-            // Wait a moment for server to fully initialize
-            Thread.sleep(500);
+            // Wait for server to be ready with timeout
+            waitForServerReady("http://localhost:9999/api/script/health", 5000);
             
             // Test stopping the server
             server.stop();
@@ -42,8 +42,8 @@ public class LocalServerTest {
         } catch (IOException e) {
             System.err.println("  ✗ Failed to start server: " + e.getMessage());
             throw new RuntimeException(e);
-        } catch (InterruptedException e) {
-            System.err.println("  ✗ Test interrupted: " + e.getMessage());
+        } catch (Exception e) {
+            System.err.println("  ✗ Test failed: " + e.getMessage());
             throw new RuntimeException(e);
         }
         
@@ -57,7 +57,9 @@ public class LocalServerTest {
         
         try {
             server.start();
-            Thread.sleep(500); // Give server time to start
+            
+            // Wait for server to be ready
+            waitForServerReady("http://localhost:9999/api/script/health", 5000);
             
             // Test the health endpoint
             URL url = new URL("http://localhost:9999/api/script/health");
@@ -71,7 +73,10 @@ public class LocalServerTest {
             conn.disconnect();
             server.stop();
             
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException e) {
+            System.err.println("  ✗ Test failed: " + e.getMessage());
+            throw new RuntimeException(e);
+        } catch (Exception e) {
             System.err.println("  ✗ Test failed: " + e.getMessage());
             throw new RuntimeException(e);
         }
@@ -86,7 +91,9 @@ public class LocalServerTest {
         
         try {
             server.start();
-            Thread.sleep(500); // Give server time to start
+            
+            // Wait for server to be ready
+            waitForServerReady("http://localhost:9999/api/script/health", 5000);
             
             // Test the version endpoint
             URL url = new URL("http://localhost:9999/api/script/version");
@@ -100,11 +107,45 @@ public class LocalServerTest {
             conn.disconnect();
             server.stop();
             
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException e) {
+            System.err.println("  ✗ Test failed: " + e.getMessage());
+            throw new RuntimeException(e);
+        } catch (Exception e) {
             System.err.println("  ✗ Test failed: " + e.getMessage());
             throw new RuntimeException(e);
         }
         
         System.out.println();
+    }
+    
+    /**
+     * Waits for the server to be ready by polling an endpoint.
+     * 
+     * @param urlString URL to check
+     * @param timeoutMs timeout in milliseconds
+     * @throws Exception if server doesn't become ready in time
+     */
+    private static void waitForServerReady(String urlString, long timeoutMs) throws Exception {
+        long startTime = System.currentTimeMillis();
+        while (System.currentTimeMillis() - startTime < timeoutMs) {
+            try {
+                URL url = new URL(urlString);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("GET");
+                conn.setConnectTimeout(100);
+                conn.setReadTimeout(100);
+                
+                int responseCode = conn.getResponseCode();
+                conn.disconnect();
+                
+                if (responseCode == 200) {
+                    return; // Server is ready
+                }
+            } catch (IOException e) {
+                // Server not ready yet, continue polling
+            }
+            Thread.sleep(100);
+        }
+        throw new Exception("Server did not become ready within " + timeoutMs + "ms");
     }
 }

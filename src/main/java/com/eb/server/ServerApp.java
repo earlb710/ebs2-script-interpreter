@@ -91,9 +91,9 @@ public class ServerApp {
     private static String parseHost(String[] args) {
         String host = DEFAULT_HOST;
         
-        // Look for --host argument
+        // Look for --host argument (using --host only to avoid conflict with help -h)
         for (int i = 0; i < args.length - 1; i++) {
-            if ("--host".equals(args[i]) || "-h".equals(args[i])) {
+            if ("--host".equals(args[i])) {
                 host = args[i + 1];
                 break;
             }
