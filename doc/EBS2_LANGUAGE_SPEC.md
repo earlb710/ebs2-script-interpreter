@@ -1227,6 +1227,9 @@ var merged = person.merge(contact)
 // Get record as JSON string
 var json = person.toJSON()                   // '{"name":"Alice","age":31,"email":"alice@example.com"}'
 
+// Alternative: Use .toString() (returns same JSON string)
+var str = person.toString()                  // '{"name":"Alice","age":31,"email":"alice@example.com"}'
+
 // Create record from JSON string
 var fromJSON = record.fromJSON(json)
 ```
@@ -1238,6 +1241,112 @@ var fromJSON = record.fromJSON(json)
 - ✅ **Serialization** - Convert to/from JSON for storage or transmission
 - ✅ **Copying** - Create independent copies of records
 - ✅ **Merging** - Combine data from multiple records
+
+### Universal toString() Method
+
+All data types in EBS2 support the `.toString()` method, which converts values to their string representation. For complex types like records and screens, `.toString()` returns a JSON string.
+
+#### Basic Types
+
+```javascript
+// number to string
+var count = 42
+var countStr = count.toString()              // "42"
+
+var price = 19.99
+var priceStr = price.toString()              // "19.99"
+
+// text to string (returns itself)
+var name = "Alice"
+var nameStr = name.toString()                // "Alice"
+
+// flag to string
+var isReady = true
+var readyStr = isReady.toString()            // "true"
+
+var isDone = false
+var doneStr = isDone.toString()              // "false"
+
+// date to string
+var birthday = "2015-03-15"
+var birthdayStr = birthday.toString()        // "2015-03-15"
+```
+
+#### Collection Types
+
+```javascript
+// array to string (JSON array format)
+var numbers = {1, 2, 3, 4, 5}
+var numbersStr = numbers.toString()          // "[1,2,3,4,5]"
+
+var fruits = {"apple", "banana", "cherry"}
+var fruitsStr = fruits.toString()            // '["apple","banana","cherry"]'
+
+// indicator to string
+var status as indicator ("pending", "active", "complete") = "active"
+var statusStr = status.toString()            // "active"
+
+// map to string (JSON object format)
+var settings as map = map {
+    "theme": "dark",
+    "fontSize": 14
+}
+var settingsStr = settings.toString()        // '{"theme":"dark","fontSize":14}'
+```
+
+#### Record to String (JSON)
+
+```javascript
+// record to string returns JSON
+var person = record {
+    name: "Alice",
+    age: 30,
+    email: "alice@example.com"
+}
+
+var personStr = person.toString()
+// Returns: '{"name":"Alice","age":30,"email":"alice@example.com"}'
+
+// .toString() is equivalent to .toJSON() for records
+var json = person.toJSON()
+// Both return the same JSON string
+```
+
+#### Screen to String (JSON)
+
+```javascript
+screen MyScreen
+    title "Sample Screen"
+    width 800
+    height 600
+    
+    label WelcomeLabel
+        text "Welcome!"
+    end label
+end screen
+
+// Convert screen to JSON string
+var screenStr = MyScreen.toString()
+// Returns JSON representation of the entire screen structure
+
+// .toString() is equivalent to .toJSON() for screens
+var screenJson = MyScreen.toJSON()
+// Both return the same JSON string
+```
+
+**Use Cases for toString():**
+- **Logging and debugging** - Convert any value to string for display
+- **String concatenation** - Combine values in messages
+- **Serialization** - Save complex objects as JSON strings
+- **Type conversion** - Explicit conversion to string representation
+- **Data export** - Convert data structures to portable format
+
+**Benefits:**
+- ✅ **Universal method** - Works on all data types
+- ✅ **Consistent behavior** - Predictable string conversion
+- ✅ **JSON for complex types** - Records and screens serialize to JSON
+- ✅ **Type-safe** - Always returns a valid string
+- ✅ **Debugging friendly** - Easy to inspect values
 
 
 #### map
@@ -2575,9 +2684,13 @@ end screen
 // Output screen as JSON string
 print MyScreen
 
-// Convert screen to JSON for saving
+// Convert screen to JSON for saving (using .toJSON())
 var screenJson = MyScreen.toJSON()
 write screenJson to file "screens/myscreen.json"
+
+// Alternative: Use .toString() (returns same JSON string)
+var screenStr = MyScreen.toString()
+write screenStr to file "screens/myscreen2.json"
 
 // Load screen from JSON
 var jsonData = read file "screens/myscreen.json"

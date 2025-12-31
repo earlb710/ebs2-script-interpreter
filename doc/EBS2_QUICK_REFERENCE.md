@@ -389,9 +389,43 @@ person.addField("phone", "555-1234")
 person.removeField("email")
 var copy = person.copy()
 var merged = person.merge(otherRecord)
-var json = person.toJSON()
+var json = person.toJSON()                   // JSON string
+var str = person.toString()                  // Same as toJSON()
 var fromJSON = record.fromJSON(json)
 ```
+
+---
+
+## Data Type Methods
+
+### Universal toString() Method
+
+All data types support `.toString()` for string conversion:
+
+```javascript
+// Basic types
+var count = 42
+var countStr = count.toString()              // "42"
+
+var name = "Alice"
+var nameStr = name.toString()                // "Alice"
+
+var isReady = true
+var readyStr = isReady.toString()            // "true"
+
+// Arrays (JSON format)
+var numbers = {1, 2, 3}
+var numbersStr = numbers.toString()          // "[1,2,3]"
+
+// Records (JSON format)
+var person = record { name: "Bob", age: 25 }
+var personStr = person.toString()            // '{"name":"Bob","age":25}'
+
+// Screens (JSON format)
+var screenStr = MyScreen.toString()          // JSON representation
+```
+
+**Note:** For records and screens, `.toString()` returns the same JSON string as `.toJSON()`.
 
 ---
 
@@ -442,10 +476,11 @@ hide screen MyScreen
 // Print screen as JSON (for save/load)
 print MyScreen              // Outputs JSON
 var json = MyScreen.toJSON()
+var str = MyScreen.toString()                // Same as toJSON()
 var loaded = screen.fromJSON(json)
 ```
 
-**Note:** Use `show screen` to display screens. Use `print <ScreenName>` (without `screen`) to output JSON for serialization.
+**Note:** Use `show screen` to display screens. Use `print <ScreenName>` (without `screen`) to output JSON for serialization. Both `.toJSON()` and `.toString()` return the same JSON string.
 
 ---
 

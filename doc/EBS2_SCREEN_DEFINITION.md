@@ -87,8 +87,11 @@ Use the `print` command (without the `screen` keyword) to output the JSON repres
 // Print screen as JSON string
 print WelcomeScreen
 
-// Save to variable
+// Save to variable using .toJSON()
 var screenJson = WelcomeScreen.toJSON()
+
+// Alternative: Use .toString() (returns same JSON string)
+var screenStr = WelcomeScreen.toString()
 
 // Later, load screen from JSON
 var loadedScreen = screen.fromJSON(screenJson)
@@ -1544,8 +1547,11 @@ This outputs a JSON string representing the entire screen structure, including:
 #### Converting Screen to JSON
 
 ```javascript
-// Get screen as JSON string
+// Get screen as JSON string using .toJSON()
 var screenJson = MyScreen.toJSON()
+
+// Alternative: Use .toString() (returns same JSON string)
+var screenStr = MyScreen.toString()
 
 // Save to file
 write screenJson to file "screens/myscreen.json"
@@ -1571,8 +1577,12 @@ show screen loadedScreen
 
 **1. Screen Templates:**
 ```javascript
-// Save a screen as a template
+// Save a screen as a template using .toJSON()
 var templateJson = MyScreen.toJSON()
+
+// Alternative: Use .toString() (returns same JSON string)
+var templateStr = MyScreen.toString()
+
 write templateJson to file "templates/form_template.json"
 
 // Later, load and customize
@@ -1601,8 +1611,12 @@ show screen dynamicScreen
 
 **3. Screen Version Control:**
 ```javascript
-// Export current screen state
+// Export current screen state using .toJSON()
 var currentVersion = MyScreen.toJSON()
+
+// Alternative: Use .toString() (returns same JSON string)
+var currentVersionStr = MyScreen.toString()
+
 write currentVersion to file "versions/myscreen_v2.json"
 
 // Compare with previous version
