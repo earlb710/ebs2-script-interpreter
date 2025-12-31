@@ -184,10 +184,23 @@ By default, the WAR deploys to `/ebs2-interpreter`. To change this:
 
 ### CORS Settings
 
-CORS is configured in `com.eb.web.filter.CorsFilter`. Modify the filter to restrict origins in production:
+⚠️ **Security Warning**: The default configuration allows requests from any origin (`Access-Control-Allow-Origin: *`). This is suitable for development but **must be restricted in production**.
+
+CORS is configured in `com.eb.web.filter.CorsFilter`. For production, modify the filter to restrict origins:
 
 ```java
+// Option 1: Single domain
 httpResponse.setHeader("Access-Control-Allow-Origin", "https://your-domain.com");
+
+// Option 2: Multiple domains (requires custom logic)
+String origin = httpRequest.getHeader("Origin");
+if (origin != null && allowedOrigins.contains(origin)) {
+    httpResponse.setHeader("Access-Control-Allow-Origin", origin);
+}
+
+// Option 3: Use environment variable
+String allowedOrigin = System.getenv("ALLOWED_ORIGIN");
+httpResponse.setHeader("Access-Control-Allow-Origin", allowedOrigin);
 ```
 
 ## Development

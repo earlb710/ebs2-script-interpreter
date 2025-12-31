@@ -23,6 +23,10 @@ public class CorsFilter implements Filter {
         HttpServletResponse httpResponse = (HttpServletResponse) response;
         
         // Set CORS headers
+        // WARNING: Using wildcard '*' allows requests from any origin.
+        // For production environments, replace with specific domain(s):
+        // httpResponse.setHeader("Access-Control-Allow-Origin", "https://yourdomain.com");
+        // Or make it configurable via environment variables or properties file.
         httpResponse.setHeader("Access-Control-Allow-Origin", "*");
         httpResponse.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
         httpResponse.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
