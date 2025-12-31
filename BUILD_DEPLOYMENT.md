@@ -7,7 +7,77 @@ This document describes how to build and deploy the EBS2 Script Interpreter for 
 - Java 17 or later
 - Maven 3.8 or later
 - For JavaFX: JavaFX SDK 17 or later (automatically downloaded by Maven)
+- For Local Server: No additional requirements (uses embedded Grizzly HTTP server)
 - For WAR: Jakarta EE compatible application server (e.g., Tomcat 10, Jetty 11, WildFly 27)
+
+## Running the Local Server (Embedded HTTP Server)
+
+The EBS2 Script Interpreter includes an embedded HTTP server for local development and testing. This is the easiest way to get started with the REST API without needing a separate application server.
+
+### 1. Build the Project
+
+```bash
+mvn clean compile
+```
+
+### 2. Start the Local Server
+
+**Using Maven (recommended):**
+```bash
+# Default settings (localhost:8080)
+mvn exec:java -Dexec.mainClass="com.eb.server.ServerApp"
+
+# Custom port
+mvn exec:java -Dexec.mainClass="com.eb.server.ServerApp" -Dexec.args="--port 9000"
+
+# Custom host and port
+mvn exec:java -Dexec.mainClass="com.eb.server.ServerApp" -Dexec.args="--host 0.0.0.0 --port 9000"
+```
+
+**Using Java directly:**
+```bash
+java -cp "target/classes:$(mvn dependency:build-classpath -q -Dmdep.outputFile=/dev/stdout)" \
+  com.eb.server.ServerApp --port 8080
+```
+
+**Using environment variables:**
+```bash
+export EBS2_PORT=9000
+export EBS2_HOST=localhost
+mvn exec:java -Dexec.mainClass="com.eb.server.ServerApp"
+```
+
+### 3. Access the API
+
+Once started, the server displays available endpoints:
+```
+=== EBS2 Local Server ===
+Server is running at: http://localhost:8080/
+
+Available API endpoints:
+  POST http://localhost:8080/api/script/execute   - Execute EBS2 script
+  POST http://localhost:8080/api/script/validate  - Validate EBS2 script
+  GET  http://localhost:8080/api/script/version   - Get version info
+  GET  http://localhost:8080/api/script/health    - Health check
+```
+
+### 4. Test the API
+
+**Health check:**
+```bash
+curl http://localhost:8080/api/script/health
+```
+
+**Execute script:**
+```bash
+curl -X POST http://localhost:8080/api/script/execute \
+  -H "Content-Type: application/json" \
+  -d '{"code": "program Test\n\nmain\n    print \"Hello, World!\"\nend main"}'
+```
+
+### 5. Stop the Server
+
+Press `Ctrl+C` to stop the server gracefully.
 
 ## Building for JavaFX (Desktop Application)
 
@@ -209,6 +279,12 @@ httpResponse.setHeader("Access-Control-Allow-Origin", allowedOrigin);
 
 For local development with auto-reload:
 
+#### Local Server (REST API)
+```bash
+# Start the embedded server (fastest for API development)
+mvn exec:java -Dexec.mainClass="com.eb.server.ServerApp"
+```
+
 #### JavaFX
 ```bash
 mvn javafx:run
@@ -238,6 +314,20 @@ mvn package -P war
 **Problem**: Missing JavaFX modules
 - **Solution**: The Shade plugin includes all dependencies. Ensure build completed successfully.
 
+### Local Server Issues
+
+**Problem**: Port already in use
+- **Solution**: Use a different port with `--port` argument
+- **Solution**: Find and stop the process using the port: `lsof -i :8080` (Linux/Mac) or `netstat -ano | findstr :8080` (Windows)
+
+**Problem**: Server starts but API not responding
+- **Solution**: Check firewall settings are not blocking the port
+- **Solution**: Verify you're using the correct base URL (shown when server starts)
+
+**Problem**: Cannot access from other machines
+- **Solution**: Bind to all interfaces with `--host 0.0.0.0`
+- **Solution**: Ensure firewall allows incoming connections on the port
+
 ### WAR Deployment Issues
 
 **Problem**: 404 Not Found
@@ -253,6 +343,20 @@ mvn package -P war
 - **Solution**: Check browser console for specific CORS error details
 
 ## Architecture
+
+### Local Server Architecture
+```
+Local Server (Embedded Grizzly)
+├── ServerApp (Main Class)
+├── LocalServer (HTTP Server Manager)
+├── ServerConfig (Configuration)
+├── Grizzly HTTP Server
+│   └── Jersey JAX-RS Container
+│       ├── REST API (ScriptResource)
+│       ├── EBS2 Lexer/Parser
+│       └── EBS2 Runtime
+└── Dependencies (classpath)
+```
 
 ### JavaFX Architecture
 ```

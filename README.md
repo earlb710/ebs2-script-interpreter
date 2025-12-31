@@ -219,6 +219,27 @@ Or using Maven:
 mvn javafx:run
 ```
 
+### Run Local Server (REST API)
+
+Start a local embedded server for REST API access (no separate application server needed):
+
+```bash
+# Build the project first
+mvn clean compile
+
+# Run the local server (default: localhost:8080)
+mvn exec:java -Dexec.mainClass="com.eb.server.ServerApp"
+
+# Or with custom port
+mvn exec:java -Dexec.mainClass="com.eb.server.ServerApp" -Dexec.args="--port 9000"
+
+# Or run directly with Java
+java -cp "target/classes:$(mvn dependency:build-classpath -q -Dmdep.outputFile=/dev/stdout)" \
+  com.eb.server.ServerApp --port 8080
+```
+
+The server will display available endpoints when it starts. Access the API at `http://localhost:8080/api/`
+
 ### Build for HTML Frontend (Web)
 
 Build a WAR file for deployment to application servers:
@@ -237,7 +258,7 @@ Access the application at: `http://localhost:8080/ebs2-interpreter/`
 
 ### API Endpoints
 
-The HTML frontend provides REST API endpoints:
+The REST API provides the following endpoints:
 - `POST /api/script/execute` - Execute EBS2 script
 - `POST /api/script/validate` - Validate EBS2 script
 - `GET /api/script/version` - Get version information

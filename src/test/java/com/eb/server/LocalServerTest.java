@@ -1,0 +1,151 @@
+package com.eb.server;
+
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
+/**
+ * Simple test for the LocalServer functionality.
+ * Tests that the server can start, respond to requests, and stop cleanly.
+ */
+public class LocalServerTest {
+    
+    public static void main(String[] args) {
+        System.out.println("=== EBS2 Local Server Test ===\n");
+        
+        testServerStartStop();
+        testHealthEndpoint();
+        testVersionEndpoint();
+        
+        System.out.println("\n=== All Tests Completed Successfully ===");
+    }
+    
+    private static void testServerStartStop() {
+        System.out.println("Test 1: Server Start/Stop");
+        
+        LocalServer server = new LocalServer(new ServerConfig(9999));
+        
+        try {
+            // Test starting the server
+            server.start();
+            assert server.isRunning() : "Server should be running after start()";
+            System.out.println("  ✓ Server started successfully");
+            
+            // Wait for server to be ready with timeout
+            waitForServerReady("http://localhost:9999/api/script/health", 5000);
+            
+            // Test stopping the server
+            server.stop();
+            assert !server.isRunning() : "Server should not be running after stop()";
+            System.out.println("  ✓ Server stopped successfully");
+            
+        } catch (IOException e) {
+            System.err.println("  ✗ Failed to start server: " + e.getMessage());
+            throw new RuntimeException(e);
+        } catch (Exception e) {
+            System.err.println("  ✗ Test failed: " + e.getMessage());
+            throw new RuntimeException(e);
+        }
+        
+        System.out.println();
+    }
+    
+    private static void testHealthEndpoint() {
+        System.out.println("Test 2: Health Endpoint");
+        
+        LocalServer server = new LocalServer(new ServerConfig(9999));
+        
+        try {
+            server.start();
+            
+            // Wait for server to be ready
+            waitForServerReady("http://localhost:9999/api/script/health", 5000);
+            
+            // Test the health endpoint
+            URL url = new URL("http://localhost:9999/api/script/health");
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            
+            int responseCode = conn.getResponseCode();
+            assert responseCode == 200 : "Health endpoint should return 200 OK";
+            System.out.println("  ✓ Health endpoint returned: " + responseCode);
+            
+            conn.disconnect();
+            server.stop();
+            
+        } catch (IOException e) {
+            System.err.println("  ✗ Test failed: " + e.getMessage());
+            throw new RuntimeException(e);
+        } catch (Exception e) {
+            System.err.println("  ✗ Test failed: " + e.getMessage());
+            throw new RuntimeException(e);
+        }
+        
+        System.out.println();
+    }
+    
+    private static void testVersionEndpoint() {
+        System.out.println("Test 3: Version Endpoint");
+        
+        LocalServer server = new LocalServer(new ServerConfig(9999));
+        
+        try {
+            server.start();
+            
+            // Wait for server to be ready
+            waitForServerReady("http://localhost:9999/api/script/health", 5000);
+            
+            // Test the version endpoint
+            URL url = new URL("http://localhost:9999/api/script/version");
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            
+            int responseCode = conn.getResponseCode();
+            assert responseCode == 200 : "Version endpoint should return 200 OK";
+            System.out.println("  ✓ Version endpoint returned: " + responseCode);
+            
+            conn.disconnect();
+            server.stop();
+            
+        } catch (IOException e) {
+            System.err.println("  ✗ Test failed: " + e.getMessage());
+            throw new RuntimeException(e);
+        } catch (Exception e) {
+            System.err.println("  ✗ Test failed: " + e.getMessage());
+            throw new RuntimeException(e);
+        }
+        
+        System.out.println();
+    }
+    
+    /**
+     * Waits for the server to be ready by polling an endpoint.
+     * 
+     * @param urlString URL to check
+     * @param timeoutMs timeout in milliseconds
+     * @throws Exception if server doesn't become ready in time
+     */
+    private static void waitForServerReady(String urlString, long timeoutMs) throws Exception {
+        long startTime = System.currentTimeMillis();
+        while (System.currentTimeMillis() - startTime < timeoutMs) {
+            try {
+                URL url = new URL(urlString);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("GET");
+                conn.setConnectTimeout(100);
+                conn.setReadTimeout(100);
+                
+                int responseCode = conn.getResponseCode();
+                conn.disconnect();
+                
+                if (responseCode == 200) {
+                    return; // Server is ready
+                }
+            } catch (IOException e) {
+                // Server not ready yet, continue polling
+            }
+            Thread.sleep(100);
+        }
+        throw new Exception("Server did not become ready within " + timeoutMs + "ms");
+    }
+}
