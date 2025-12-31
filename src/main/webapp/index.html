@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Optional: Configure API base URL if different from default /api path -->
+    <!-- <meta name="api-base-url" content="https://api.example.com"> -->
     <title>EBS2 Script Interpreter</title>
     <style>
         body {
@@ -88,7 +90,17 @@ end main</textarea>
     </div>
 
     <script>
-        const API_BASE_URL = window.location.origin + '/api';
+        // API configuration - can be overridden by environment or deployment
+        // Default assumes API is at /api path relative to application root
+        const API_BASE_URL = (function() {
+            // Check if API URL is configured via meta tag or environment
+            const apiMeta = document.querySelector('meta[name="api-base-url"]');
+            if (apiMeta && apiMeta.content) {
+                return apiMeta.content;
+            }
+            // Default to same origin /api path
+            return window.location.origin + '/api';
+        })();
 
         async function executeScript() {
             const code = document.getElementById('codeEditor').value;

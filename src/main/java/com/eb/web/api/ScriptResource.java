@@ -65,7 +65,7 @@ public class ScriptResource {
             // For now, return a mock response with sanitized output
             Map<String, Object> result = new HashMap<>();
             result.put("success", true);
-            result.put("output", "Script execution not yet implemented.\nReceived " + code.length() + " characters of code.");
+            result.put("output", "Script execution not yet implemented.");
             result.put("message", "This is a placeholder response. Full implementation pending.");
             
             return Response.ok(result).build();
