@@ -25,23 +25,55 @@ public class ScriptResource {
     @Path("/execute")
     public Response executeScript(Map<String, Object> request) {
         try {
-            String code = (String) request.get("code");
+            // Validate request
+            if (request == null || request.isEmpty()) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(createErrorResponse("Request body is required"))
+                    .build();
+            }
             
-            if (code == null || code.trim().isEmpty()) {
+            // Safely extract and validate code
+            Object codeObj = request.get("code");
+            if (codeObj == null) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(createErrorResponse("Code parameter is required"))
+                    .build();
+            }
+            
+            if (!(codeObj instanceof String)) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(createErrorResponse("Code must be a string"))
+                    .build();
+            }
+            
+            String code = (String) codeObj;
+            
+            if (code.trim().isEmpty()) {
                 return Response.status(Response.Status.BAD_REQUEST)
                     .entity(createErrorResponse("Code cannot be empty"))
                     .build();
             }
             
+            // Basic sanitization - limit code length to prevent abuse
+            if (code.length() > 100000) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(createErrorResponse("Code exceeds maximum length of 100,000 characters"))
+                    .build();
+            }
+            
             // TODO: Implement actual EBS2 script execution
-            // For now, return a mock response
+            // For now, return a mock response with sanitized output
             Map<String, Object> result = new HashMap<>();
             result.put("success", true);
-            result.put("output", "Script execution not yet implemented.\nReceived code:\n" + code);
+            result.put("output", "Script execution not yet implemented.\nReceived " + code.length() + " characters of code.");
             result.put("message", "This is a placeholder response. Full implementation pending.");
             
             return Response.ok(result).build();
             
+        } catch (ClassCastException e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                .entity(createErrorResponse("Invalid request format: " + e.getMessage()))
+                .build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                 .entity(createErrorResponse("Internal server error: " + e.getMessage()))
@@ -59,11 +91,39 @@ public class ScriptResource {
     @Path("/validate")
     public Response validateScript(Map<String, Object> request) {
         try {
-            String code = (String) request.get("code");
+            // Validate request
+            if (request == null || request.isEmpty()) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(createErrorResponse("Request body is required"))
+                    .build();
+            }
             
-            if (code == null || code.trim().isEmpty()) {
+            // Safely extract and validate code
+            Object codeObj = request.get("code");
+            if (codeObj == null) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(createErrorResponse("Code parameter is required"))
+                    .build();
+            }
+            
+            if (!(codeObj instanceof String)) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(createErrorResponse("Code must be a string"))
+                    .build();
+            }
+            
+            String code = (String) codeObj;
+            
+            if (code.trim().isEmpty()) {
                 return Response.status(Response.Status.BAD_REQUEST)
                     .entity(createErrorResponse("Code cannot be empty"))
+                    .build();
+            }
+            
+            // Basic sanitization - limit code length
+            if (code.length() > 100000) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(createErrorResponse("Code exceeds maximum length of 100,000 characters"))
                     .build();
             }
             
@@ -74,6 +134,10 @@ public class ScriptResource {
             
             return Response.ok(result).build();
             
+        } catch (ClassCastException e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                .entity(createErrorResponse("Invalid request format: " + e.getMessage()))
+                .build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                 .entity(createErrorResponse("Internal server error: " + e.getMessage()))
