@@ -195,20 +195,59 @@ var json = person.toJSON()
 ## 🛠️ Development
 
 ### Prerequisites
-- Java 21+
+- Java 17+
 - Maven 3.8+
-- JavaFX 21
+- JavaFX 17+ (automatically downloaded by Maven)
+- For WAR deployment: Jakarta EE compatible application server (Tomcat 10+, Jetty 11+, WildFly 27+)
 
-### Build (Future)
+### Build for JavaFX (Desktop)
+
+Build a standalone JAR with all dependencies:
 ```bash
-mvn clean install
-mvn test
-mvn package
+mvn clean package
 ```
 
-### Run (Future)
+This creates `target/ebs2-interpreter-javafx.jar` (~65MB) with all dependencies included.
+
+Run the JavaFX application:
 ```bash
-java -jar target/ebs2-interpreter.jar
+java -jar target/ebs2-interpreter-javafx.jar
+```
+
+Or using Maven:
+```bash
+mvn javafx:run
+```
+
+### Build for HTML Frontend (Web)
+
+Build a WAR file for deployment to application servers:
+```bash
+mvn package -P war
+```
+
+This creates `target/ebs2-interpreter.war` (~62MB) for deployment.
+
+Deploy to your application server:
+- **Tomcat 10+**: Copy to `$TOMCAT_HOME/webapps/`
+- **Jetty 11+**: Copy to `$JETTY_BASE/webapps/`
+- **WildFly 27+**: Use CLI or copy to `standalone/deployments/`
+
+Access the application at: `http://localhost:8080/ebs2-interpreter/`
+
+### API Endpoints
+
+The HTML frontend provides REST API endpoints:
+- `POST /api/script/execute` - Execute EBS2 script
+- `POST /api/script/validate` - Validate EBS2 script
+- `GET /api/script/version` - Get version information
+- `GET /api/script/health` - Health check endpoint
+
+See [BUILD_DEPLOYMENT.md](BUILD_DEPLOYMENT.md) for detailed deployment instructions.
+
+### Run Tests
+```bash
+mvn test
 ```
 
 ---
