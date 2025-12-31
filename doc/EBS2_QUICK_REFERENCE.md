@@ -812,18 +812,41 @@ var x = 10; var y = 20; print x + y
 ```
 
 ### Block Styles
-Choose between `end` keywords or `{}` braces (pick one style per project):
+**Both `end` keywords and `{}` braces are valid for ALL constructs** (control flow, functions, screens, UI components):
+
 ```javascript
-// With end keywords
+// Control flow with end keywords
 if x > 0 then
     print "Positive"
 end if
 
-// With curly braces
+// Control flow with curly braces  
 if x > 0 {
     print "Positive"
 }
+
+// Functions with end keywords
+function add(a as number, b as number) as number
+    return a + b
+end function
+
+// Functions with curly braces
+function add(a as number, b as number) as number {
+    return a + b
+}
+
+// Screen components with end keywords
+label MyLabel
+    text "Hello"
+end label
+
+// Screen components with curly braces
+label MyLabel {
+    text "Hello"
+}
 ```
+
+**Note:** You can mix styles within your code - use whichever feels most natural for each situation.
 
 ### Type Inference
 Types can be inferred from values:

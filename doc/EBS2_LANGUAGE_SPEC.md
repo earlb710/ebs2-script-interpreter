@@ -417,6 +417,8 @@ EBS2 supports curly braces `{}` as an alternative to the explicit `end` keywords
 
 #### Syntax Forms Comparison
 
+**Both syntax forms are valid and interchangeable for ALL constructs in EBS2:**
+
 | Feature | End Keyword Form | Curly Brace Form |
 |---------|------------------|------------------|
 | **If Statement** | `if x > 5 then ... end if` | `if x > 5 { ... }` |
@@ -425,6 +427,12 @@ EBS2 supports curly braces `{}` as an alternative to the explicit `end` keywords
 | **While Loop** | `while condition loop ... end while` | `while condition loop { ... }` |
 | **Function** | `to func ... end function` | `function func() { ... }` |
 | **Try-Catch** | `try ... catch ... end try` | `try { ... } catch { ... }` |
+| **Screen** | `screen MyScreen ... end screen` | `screen MyScreen { ... }` |
+| **Label** | `label MyLabel ... end label` | `label MyLabel { ... }` |
+| **Button** | `button MyBtn ... end button` | `button MyBtn { ... }` |
+| **Record Type** | `record type Person ... end` | `record type Person { ... }` |
+
+**Note:** You can mix and match styles within your code. Choose the style that feels most comfortable for each situation.
 
 #### If Statements with Curly Braces
 
@@ -2672,6 +2680,72 @@ canvas DrawingCanvas
     end if
 end canvas
 ```
+
+### Alternative Syntax: Curly Braces for UI Components
+
+**All UI components support both `end` keywords and curly braces `{}`:**
+
+```javascript
+// Using end keywords (traditional)
+label MyLabel
+    text "Hello World"
+    size large
+    color blue
+end label
+
+// Using curly braces (alternative)
+label MyLabel {
+    text "Hello World"
+    size large
+    color blue
+}
+
+// Both forms are equivalent and valid
+
+// Button with end keyword
+button SubmitButton
+    text "Submit"
+    style primary
+    if clicked
+        print "Submitted!"
+    end when
+end button
+
+// Button with curly braces
+button SubmitButton {
+    text "Submit"
+    style primary
+    if clicked {
+        print "Submitted!"
+    }
+}
+
+// Textbox with end keyword
+textbox EmailInput
+    placeholder "Enter email..."
+    max length 100
+    if changed
+        var email = get text from EmailInput
+        print "Email: " + email
+    end when
+end textbox
+
+// Textbox with curly braces
+textbox EmailInput {
+    placeholder "Enter email..."
+    max length 100
+    if changed {
+        var email = get text from EmailInput
+        print "Email: " + email
+    }
+}
+```
+
+**Key Points:**
+- ✅ **Both styles work for all components**: labels, buttons, textboxes, checkboxes, radio groups, dropdowns, listboxes, canvas, etc.
+- ✅ **Mix and match**: You can use `end` for some components and `{}` for others in the same screen
+- ✅ **Nested blocks**: Event handlers (`if clicked`, `if changed`, etc.) can also use either style
+- ✅ **Choose what feels natural**: Use the style you're most comfortable with
 
 ### Screen Management and Operations
 

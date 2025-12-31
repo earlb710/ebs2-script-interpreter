@@ -345,11 +345,14 @@ screen DialogScreen {
 
 ## Layout Systems
 
+**Note:** All layout examples below can use either `end` keywords or curly braces `{}`. Both forms are valid and equivalent.
+
 ### No Layout (Absolute Positioning)
 
 Components are positioned absolutely:
 
 ```javascript
+// Using end keywords
 screen MyScreen
     label MyLabel
         text "Hello"
@@ -361,6 +364,19 @@ screen MyScreen
         at x:10 y:50
     end button
 end screen
+
+// Using curly braces (alternative)
+screen MyScreen {
+    label MyLabel {
+        text "Hello"
+        at x:10 y:10
+    }
+    
+    button MyButton {
+        text "Click"
+        at x:10 y:50
+    }
+}
 ```
 
 ### Vertical Layout
