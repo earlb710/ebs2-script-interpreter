@@ -48,7 +48,7 @@ end main
 | `number` | Integer or decimal | `42` or `3.14` |
 | `number 0..100` | Ranged integer | `85` (0-100 only) |
 | `number -1.0..1.0` | Ranged decimal | `0.5` (-1.0 to 1.0) |
-| `flag` | Boolean true/false | `true` or `false` |
+| `flag` | Boolean true/false | `true/false` or `yes/no` |
 | `array` | Collection of values | `[1, 2, 3]` |
 | `array.text` | Array of text | `["a", "b", "c"]` |
 | `array.number` | Array of numbers | `[1, 2, 3]` |
@@ -434,6 +434,7 @@ var screenStr = MyScreen.toString()          // JSON representation
 ### Basic Screen
 
 ```javascript
+// Traditional syntax
 screen MyWindow
     title "My Application"
     
@@ -449,10 +450,53 @@ screen MyWindow
     end button
 end screen
 
+// Curly braces syntax with = assignment
+screen MyWindow {
+    title = "My Application";
+    
+    label WelcomeLabel
+        text "Welcome!"
+    end label
+    
+    button ClickButton
+        text "Click Me"
+        if clicked
+            print "Button clicked!"
+        end when
+    end button
+}
+
 main
     show screen MyWindow
 end main
 ```
+
+### Screen Property Syntax
+
+```javascript
+// Traditional syntax
+screen DialogScreen
+    modal yes
+    closable yes
+    resizable no
+end screen
+
+// Curly braces syntax with yes/no
+screen DialogScreen {
+    modal = yes;
+    closable = yes;
+    resizable = no;
+}
+
+// Curly braces syntax with true/false (equivalent)
+screen DialogScreen {
+    modal = true;      // Same as yes
+    closable = true;   // Same as yes
+    resizable = false; // Same as no
+}
+```
+
+**Note:** Both `yes/no` and `true/false` are supported for flag properties.
 
 ### Screen Components
 

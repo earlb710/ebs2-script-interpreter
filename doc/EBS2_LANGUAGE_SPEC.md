@@ -172,9 +172,11 @@ print USERNAME            // "BOB"
 ```javascript
 yes         // Boolean true (beginner-friendly)
 no          // Boolean false
-true        // Also supported
-false       // Also supported
+true        // Also supported (same as yes)
+false       // Also supported (same as no)
 ```
+
+**Note:** Both `yes/no` and `true/false` are fully supported and interchangeable. Use whichever feels more natural for your code.
 
 #### List Literals
 ```javascript
@@ -659,13 +661,24 @@ var empty as text = ""
 
 #### flag
 ```javascript
+// Using true/false
 var isReady as flag = true
 var gameOver as flag = false
+
+// Using yes/no (equivalent)
+var isReady as flag = yes
+var gameOver as flag = no
+
+// Both forms are interchangeable
+var status1 as flag = true    // Same as yes
+var status2 as flag = false   // Same as no
 
 // Can use in conditions
 if isReady then print "Ready to start!"
 if not gameOver then print "Game continues"
 ```
+
+**Note:** Both `true/false` and `yes/no` are fully supported for flag values and are completely interchangeable.
 
 #### date
 ```javascript
@@ -2398,6 +2411,46 @@ main
     show screen HelloScreen
 end main
 ```
+
+### Screen Syntax Alternatives
+
+EBS2 supports two syntax styles for screen properties:
+
+```javascript
+// Traditional syntax
+screen MyScreen
+    title "Dialog Box"
+    width 400
+    height 300
+    modal yes
+    closable yes
+    resizable no
+end screen
+
+// Curly braces syntax with = assignment
+screen MyScreen {
+    title = "Dialog Box";
+    width = 400;
+    height = 300;
+    modal = yes;
+    closable = yes;
+    resizable = no;
+}
+
+// Flag properties support both yes/no and true/false
+screen DialogScreen {
+    modal = true;      // Same as yes
+    closable = true;   // Same as yes
+    resizable = false; // Same as no
+    movable = true;    // Same as yes
+}
+```
+
+**Note:** 
+- Both syntax styles are supported and equivalent
+- For flag properties, both `yes/no` and `true/false` are interchangeable
+- Curly braces syntax uses `=` for assignment and semicolons are optional
+- Choose the style that feels most natural for your code
 
 ### Screen with Layout (Intermediate)
 

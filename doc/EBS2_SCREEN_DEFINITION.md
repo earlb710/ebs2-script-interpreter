@@ -106,6 +106,7 @@ The JSON representation includes all screen properties, components, and their co
 ### General Structure
 
 ```javascript
+// Traditional syntax
 screen ScreenName
     // Screen properties
     title "Screen Title"
@@ -127,7 +128,31 @@ screen ScreenName
         end when
     end button
 end screen
+
+// Alternative: Curly braces syntax with = assignment
+screen ScreenName {
+    title = "Screen Title";
+    width = 800;
+    height = 600;
+    
+    // Layout definition
+    layout vertical spacing 10 padding 20
+    
+    // UI Components
+    label MyLabel
+        text "Hello"
+    end label
+    
+    button MyButton
+        text "Click"
+        if clicked
+            // Handle click
+        end when
+    end button
+}
 ```
+
+**Note:** Both syntax styles are supported. The curly braces syntax uses `=` for property assignment and semicolons are optional.
 
 ### Naming Conventions
 
@@ -157,9 +182,15 @@ Screen names should:
 Sets the window/page title:
 
 ```javascript
+// Traditional syntax
 screen MyScreen
     title "Application Name"
 end screen
+
+// Curly braces syntax
+screen MyScreen {
+    title = "Application Name";
+}
 ```
 
 ### Size Properties
@@ -167,10 +198,17 @@ end screen
 #### Width and Height
 
 ```javascript
+// Traditional syntax
 screen MyScreen
     width 800        // Pixels
     height 600       // Pixels
 end screen
+
+// Curly braces syntax
+screen MyScreen {
+    width = 800;     // Pixels
+    height = 600;    // Pixels
+}
 ```
 
 #### Size Keywords
@@ -249,22 +287,59 @@ Border styles:
 ### Visibility
 
 ```javascript
+// Traditional syntax
 screen MyScreen
     visible yes    // Default
     enabled yes    // Default
 end screen
+
+// Curly braces syntax with yes/no
+screen MyScreen {
+    visible = yes;   // Default
+    enabled = yes;   // Default
+}
+
+// Curly braces syntax with true/false (equivalent)
+screen MyScreen {
+    visible = true;  // Same as yes
+    enabled = true;  // Same as yes
+}
 ```
+
+**Note:** For flag properties, both `yes/no` and `true/false` are supported and equivalent.
 
 ### Modal Properties
 
 ```javascript
+// Traditional syntax
 screen DialogScreen
     modal yes                // Blocks other screens
     closable yes            // Can be closed by user
     resizable no            // Cannot be resized
     movable yes             // Can be moved
 end screen
+
+// Alternative: Curly braces syntax with = assignment
+screen DialogScreen {
+    modal = yes;             // Blocks other screens
+    closable = yes;          // Can be closed by user
+    resizable = no;          // Cannot be resized
+    movable = yes;           // Can be moved
+}
+
+// Both true/false and yes/no are supported for flag properties
+screen DialogScreen {
+    modal = true;            // Same as yes
+    closable = true;         // Same as yes
+    resizable = false;       // Same as no
+    movable = true;          // Same as yes
+}
 ```
+
+**Note:** 
+- Both syntax styles are supported and equivalent
+- For flag properties, you can use either `yes/no` or `true/false`
+- Curly braces syntax uses `=` for assignment and semicolons are optional
 
 ---
 
