@@ -517,6 +517,111 @@ public class JSONValue {
                   .replace("\f", "\\f");
     }
     
+    /**
+     * Creates a JSONValue from a record (Map-based representation)
+     * EBS2 method: json.fromRecord(record)
+     * 
+     * This allows converting EBS2 records to JSON objects.
+     * 
+     * @param record Map representing a record with String keys
+     * @return JSONValue representing the record as a JSON object
+     */
+    public static JSONValue fromRecord(Map<String, Object> record) {
+        if (record == null) {
+            return JSONValue.nullValue();
+        }
+        
+        JSONValue json = JSONValue.object();
+        for (Map.Entry<String, Object> entry : record.entrySet()) {
+            json.set(entry.getKey(), convertToJSONValue(entry.getValue()));
+        }
+        return json;
+    }
+    
+    /**
+     * Converts this JSON object to a record (Map-based representation)
+     * EBS2 method: json.toRecord()
+     * 
+     * This allows converting JSON objects to EBS2 records.
+     * Only works for JSON objects, not arrays or primitives.
+     * 
+     * @return Map representing the JSON object as a record
+     * @throws IllegalStateException if called on non-object JSON
+     */
+    public Map<String, Object> toRecord() {
+        if (type != JSONType.OBJECT) {
+            throw new IllegalStateException("Cannot convert non-object JSON to record");
+        }
+        
+        Map<String, Object> record = new LinkedHashMap<>();
+        @SuppressWarnings("unchecked")
+        Map<String, JSONValue> map = (Map<String, JSONValue>) value;
+        
+        for (Map.Entry<String, JSONValue> entry : map.entrySet()) {
+            record.put(entry.getKey(), convertToNativeValue(entry.getValue()));
+        }
+        
+        return record;
+    }
+    
+    /**
+     * Helper method to convert Java objects to JSONValue
+     */
+    private static JSONValue convertToJSONValue(Object obj) {
+        if (obj == null) {
+            return JSONValue.nullValue();
+        } else if (obj instanceof String) {
+            return JSONValue.string((String) obj);
+        } else if (obj instanceof Number) {
+            return JSONValue.number((Number) obj);
+        } else if (obj instanceof Boolean) {
+            return JSONValue.bool((Boolean) obj);
+        } else if (obj instanceof Map) {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> map = (Map<String, Object>) obj;
+            return fromRecord(map);
+        } else if (obj instanceof List) {
+            @SuppressWarnings("unchecked")
+            List<Object> list = (List<Object>) obj;
+            JSONValue arr = JSONValue.array();
+            for (Object item : list) {
+                arr.append(convertToJSONValue(item));
+            }
+            return arr;
+        } else if (obj instanceof JSONValue) {
+            return (JSONValue) obj;
+        } else {
+            // For other types, convert to string
+            return JSONValue.string(obj.toString());
+        }
+    }
+    
+    /**
+     * Helper method to convert JSONValue to native Java objects
+     */
+    private static Object convertToNativeValue(JSONValue json) {
+        switch (json.getType()) {
+            case OBJECT:
+                return json.toRecord();
+            case ARRAY:
+                List<Object> list = new ArrayList<>();
+                for (JSONValue item : json.values()) {
+                    list.add(convertToNativeValue(item));
+                }
+                return list;
+            case STRING:
+                return json.asString();
+            case NUMBER:
+                return json.asNumber();
+            case BOOLEAN:
+                return json.asBoolean();
+            case NULL:
+                return null;
+            default:
+                return null;
+        }
+    }
+    
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;

@@ -393,4 +393,153 @@ public class JSONValueTest {
             json.append(JSONValue.string("value"));
         });
     }
+    
+    @Test
+    @DisplayName("Convert JSON object to record")
+    public void testJsonToRecord() {
+        JSONValue json = JSONValue.object();
+        json.set("name", JSONValue.string("Alice"));
+        json.set("age", JSONValue.number(30));
+        json.set("active", JSONValue.bool(true));
+        
+        java.util.Map<String, Object> record = json.toRecord();
+        
+        assertEquals("Alice", record.get("name"));
+        assertEquals(30, ((Number) record.get("age")).intValue());
+        assertEquals(true, record.get("active"));
+        assertEquals(3, record.size());
+    }
+    
+    @Test
+    @DisplayName("Convert record to JSON object")
+    public void testRecordToJson() {
+        java.util.Map<String, Object> record = new java.util.LinkedHashMap<>();
+        record.put("name", "Bob");
+        record.put("age", 25);
+        record.put("active", false);
+        
+        JSONValue json = JSONValue.fromRecord(record);
+        
+        assertEquals(JSONValue.JSONType.OBJECT, json.getType());
+        assertEquals("Bob", json.get("name").asString());
+        assertEquals(25, json.get("age").asNumber().intValue());
+        assertFalse(json.get("active").asBoolean());
+        assertEquals(3, json.size());
+    }
+    
+    @Test
+    @DisplayName("Convert nested record to JSON")
+    public void testNestedRecordToJson() {
+        java.util.Map<String, Object> address = new java.util.LinkedHashMap<>();
+        address.put("city", "NYC");
+        address.put("zip", "10001");
+        
+        java.util.Map<String, Object> person = new java.util.LinkedHashMap<>();
+        person.put("name", "Alice");
+        person.put("address", address);
+        
+        JSONValue json = JSONValue.fromRecord(person);
+        
+        assertEquals("Alice", json.get("name").asString());
+        assertEquals("NYC", json.get("address").get("city").asString());
+        assertEquals("10001", json.get("address").get("zip").asString());
+    }
+    
+    @Test
+    @DisplayName("Convert JSON with nested objects to record")
+    public void testNestedJsonToRecord() {
+        JSONValue address = JSONValue.object();
+        address.set("city", JSONValue.string("Boston"));
+        address.set("state", JSONValue.string("MA"));
+        
+        JSONValue person = JSONValue.object();
+        person.set("name", JSONValue.string("Bob"));
+        person.set("address", address);
+        
+        java.util.Map<String, Object> record = person.toRecord();
+        
+        assertEquals("Bob", record.get("name"));
+        
+        @SuppressWarnings("unchecked")
+        java.util.Map<String, Object> addressRecord = (java.util.Map<String, Object>) record.get("address");
+        assertEquals("Boston", addressRecord.get("city"));
+        assertEquals("MA", addressRecord.get("state"));
+    }
+    
+    @Test
+    @DisplayName("Convert record with arrays to JSON")
+    public void testRecordWithArraysToJson() {
+        java.util.List<Object> hobbies = new java.util.ArrayList<>();
+        hobbies.add("reading");
+        hobbies.add("coding");
+        hobbies.add("gaming");
+        
+        java.util.Map<String, Object> person = new java.util.LinkedHashMap<>();
+        person.put("name", "Charlie");
+        person.put("hobbies", hobbies);
+        
+        JSONValue json = JSONValue.fromRecord(person);
+        
+        assertEquals("Charlie", json.get("name").asString());
+        assertEquals(3, json.get("hobbies").size());
+        assertEquals("reading", json.get("hobbies").get(0).asString());
+        assertEquals("coding", json.get("hobbies").get(1).asString());
+        assertEquals("gaming", json.get("hobbies").get(2).asString());
+    }
+    
+    @Test
+    @DisplayName("Convert JSON with arrays to record")
+    public void testJsonWithArraysToRecord() {
+        JSONValue hobbies = JSONValue.array();
+        hobbies.append(JSONValue.string("swimming"));
+        hobbies.append(JSONValue.string("hiking"));
+        
+        JSONValue person = JSONValue.object();
+        person.set("name", JSONValue.string("Diana"));
+        person.set("hobbies", hobbies);
+        
+        java.util.Map<String, Object> record = person.toRecord();
+        
+        assertEquals("Diana", record.get("name"));
+        
+        @SuppressWarnings("unchecked")
+        java.util.List<Object> hobbiesList = (java.util.List<Object>) record.get("hobbies");
+        assertEquals(2, hobbiesList.size());
+        assertEquals("swimming", hobbiesList.get(0));
+        assertEquals("hiking", hobbiesList.get(1));
+    }
+    
+    @Test
+    @DisplayName("Convert null record to JSON")
+    public void testNullRecordToJson() {
+        JSONValue json = JSONValue.fromRecord(null);
+        assertTrue(json.isNull());
+    }
+    
+    @Test
+    @DisplayName("Error: convert non-object JSON to record")
+    public void testNonObjectJsonToRecord() {
+        JSONValue json = JSONValue.array();
+        json.append(JSONValue.number(1));
+        
+        assertThrows(IllegalStateException.class, () -> {
+            json.toRecord();
+        });
+    }
+    
+    @Test
+    @DisplayName("Round trip: record to JSON to record")
+    public void testRoundTripRecordJsonRecord() {
+        java.util.Map<String, Object> original = new java.util.LinkedHashMap<>();
+        original.put("name", "Eve");
+        original.put("age", 28);
+        original.put("score", 95.5);
+        
+        JSONValue json = JSONValue.fromRecord(original);
+        java.util.Map<String, Object> result = json.toRecord();
+        
+        assertEquals("Eve", result.get("name"));
+        assertEquals(28, ((Number) result.get("age")).intValue());
+        assertEquals(95.5, ((Number) result.get("score")).doubleValue(), 0.01);
+    }
 }

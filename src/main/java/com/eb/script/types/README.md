@@ -16,6 +16,7 @@ The core class representing a JSON value in EBS2. Supports:
 - Introspection: `size()`, `isEmpty()`, `getType()`
 - Manipulation: `copy()`, `merge(other)`
 - Serialization: `toString()`, `toJSON()`, `toPrettyJSON()`
+- Record conversion: `fromRecord(record)`, `toRecord()`
 
 ### JSONFunctions.java (in stdlib package)
 Static utility functions for JSON operations:
@@ -63,13 +64,18 @@ items.append(json.number(3))
 // Serialization
 var jsonText = json.stringify(person)
 var prettyJson = json.prettyPrint(person)
+
+// Record conversion
+var record = {"name": "Charlie", "score": 95}
+var jsonFromRecord = json.fromRecord(record)
+var recordFromJson = jsonFromRecord.toRecord()
 ```
 
 ## Testing
 
 Comprehensive test coverage:
-- **JSONValueTest**: 30 tests covering all JSONValue functionality
-- **JSONFunctionsTest**: 28 tests covering parsing, serialization, and error handling
+- **JSONValueTest**: 39 tests covering all JSONValue functionality including record conversions
+- **JSONFunctionsTest**: 29 tests covering parsing, serialization, and error handling
 
 Run tests with: `mvn test`
 

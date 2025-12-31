@@ -248,6 +248,90 @@ var merged as json = person.merge(contact)
 // Result: {"name":"Alice","age":30,"email":"alice@example.com","phone":"555-1234"}
 ```
 
+## Record Conversion Methods
+
+### fromRecord(record)
+Create a JSON object from an EBS2 record.
+
+```javascript
+// Create a record
+var person as record = {
+    name: "Alice",
+    age: 30,
+    city: "NYC"
+}
+
+// Convert record to JSON
+var json as json = json.fromRecord(person)
+
+// Now you can use JSON methods
+var jsonText = json.stringify(json)
+print jsonText  // {"name":"Alice","age":30,"city":"NYC"}
+```
+
+### toRecord()
+Convert a JSON object to an EBS2 record.
+
+```javascript
+// Parse JSON
+var json as json = json.parse('{"name":"Bob","age":25,"active":true}')
+
+// Convert to record
+var person as record = json.toRecord()
+
+// Access as record
+print person.name    // "Bob"
+print person.age     // 25
+print person.active  // true
+```
+
+### Nested Conversions
+
+Both conversion methods handle nested structures:
+
+```javascript
+// Record with nested record to JSON
+var address as record = {
+    city: "Boston",
+    state: "MA"
+}
+
+var person as record = {
+    name: "Charlie",
+    address: address
+}
+
+var json as json = json.fromRecord(person)
+print json.get("address").get("city").asString()  // "Boston"
+
+// JSON with nested objects to record
+var jsonData as json = json.parse('{"user":{"name":"Diana","email":"diana@example.com"}}')
+var data as record = jsonData.toRecord()
+print data.user.name  // "Diana"
+```
+
+### Arrays in Conversions
+
+Records can contain arrays, and these are preserved during conversion:
+
+```javascript
+// Record with array to JSON
+var person as record = {
+    name: "Eve",
+    hobbies: {"reading", "coding", "gaming"}
+}
+
+var json as json = json.fromRecord(person)
+print json.get("hobbies").get(0).asString()  // "reading"
+
+// JSON array to record
+var jsonData as json = json.parse('{"items":[1,2,3]}')
+var data as record = jsonData.toRecord()
+// data.items is now an array: {1, 2, 3}
+```
+
+**Note:** Only JSON objects can be converted to records. Attempting to convert a JSON array or primitive to a record will result in an error.
+
 ## Type Checking and Conversion
 
 ### getType()
@@ -442,6 +526,10 @@ write file "export.json" with jsonText
 - `json.parse(text)` - Parse JSON string
 - `json.stringify(value)` - Convert to JSON string
 - `json.prettyPrint(value)` - Pretty-print JSON
+
+### Record Conversion
+- `json.fromRecord(record)` - Convert record to JSON
+- `toRecord()` - Convert JSON object to record
 
 ### Type Conversion
 - `asString()` - Get string value
