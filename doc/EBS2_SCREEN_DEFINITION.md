@@ -65,13 +65,7 @@ end screen
 
 ### Displaying a Screen
 
-```javascript
-main
-    print screen WelcomeScreen
-end main
-```
-
-Or using the `show` keyword:
+Use the `show` keyword to display a screen:
 
 ```javascript
 main
@@ -85,6 +79,26 @@ end main
 hide screen WelcomeScreen
 ```
 
+### Printing Screen as JSON
+
+Use the `print` command (without the `screen` keyword) to output the JSON representation of a screen. This is useful for saving and loading screen definitions:
+
+```javascript
+// Print screen as JSON string
+print WelcomeScreen
+
+// Save to variable using .toJSON()
+var screenJson = WelcomeScreen.toJSON()
+
+// Alternative: Use .toString() (returns same JSON string)
+var screenStr = WelcomeScreen.toString()
+
+// Later, load screen from JSON
+var loadedScreen = screen.fromJSON(screenJson)
+```
+
+The JSON representation includes all screen properties, components, and their configurations, allowing screens to be serialized for storage or transmission.
+
 ---
 
 ## Screen Structure
@@ -92,6 +106,7 @@ hide screen WelcomeScreen
 ### General Structure
 
 ```javascript
+// Traditional syntax
 screen ScreenName
     // Screen properties
     title "Screen Title"
@@ -113,7 +128,31 @@ screen ScreenName
         end when
     end button
 end screen
+
+// Alternative: Curly braces syntax with = assignment
+screen ScreenName {
+    title = "Screen Title";
+    width = 800;
+    height = 600;
+    
+    // Layout definition
+    layout vertical spacing 10 padding 20
+    
+    // UI Components
+    label MyLabel
+        text "Hello"
+    end label
+    
+    button MyButton
+        text "Click"
+        if clicked
+            // Handle click
+        end when
+    end button
+}
 ```
+
+**Note:** Both syntax styles are supported. The curly braces syntax uses `=` for property assignment and semicolons are optional.
 
 ### Naming Conventions
 
@@ -143,9 +182,15 @@ Screen names should:
 Sets the window/page title:
 
 ```javascript
+// Traditional syntax
 screen MyScreen
     title "Application Name"
 end screen
+
+// Curly braces syntax
+screen MyScreen {
+    title = "Application Name";
+}
 ```
 
 ### Size Properties
@@ -153,10 +198,17 @@ end screen
 #### Width and Height
 
 ```javascript
+// Traditional syntax
 screen MyScreen
     width 800        // Pixels
     height 600       // Pixels
 end screen
+
+// Curly braces syntax
+screen MyScreen {
+    width = 800;     // Pixels
+    height = 600;    // Pixels
+}
 ```
 
 #### Size Keywords
@@ -235,32 +287,72 @@ Border styles:
 ### Visibility
 
 ```javascript
+// Traditional syntax
 screen MyScreen
     visible yes    // Default
     enabled yes    // Default
 end screen
+
+// Curly braces syntax with yes/no
+screen MyScreen {
+    visible = yes;   // Default
+    enabled = yes;   // Default
+}
+
+// Curly braces syntax with true/false (equivalent)
+screen MyScreen {
+    visible = true;  // Same as yes
+    enabled = true;  // Same as yes
+}
 ```
+
+**Note:** For flag properties, both `yes/no` and `true/false` are supported and equivalent.
 
 ### Modal Properties
 
 ```javascript
+// Traditional syntax
 screen DialogScreen
     modal yes                // Blocks other screens
     closable yes            // Can be closed by user
     resizable no            // Cannot be resized
     movable yes             // Can be moved
 end screen
+
+// Alternative: Curly braces syntax with = assignment
+screen DialogScreen {
+    modal = yes;             // Blocks other screens
+    closable = yes;          // Can be closed by user
+    resizable = no;          // Cannot be resized
+    movable = yes;           // Can be moved
+}
+
+// Both true/false and yes/no are supported for flag properties
+screen DialogScreen {
+    modal = true;            // Same as yes
+    closable = true;         // Same as yes
+    resizable = false;       // Same as no
+    movable = true;          // Same as yes
+}
 ```
+
+**Note:** 
+- Both syntax styles are supported and equivalent
+- For flag properties, you can use either `yes/no` or `true/false`
+- Curly braces syntax uses `=` for assignment and semicolons are optional
 
 ---
 
 ## Layout Systems
+
+**Note:** All layout examples below can use either `end` keywords or curly braces `{}`. Both forms are valid and equivalent.
 
 ### No Layout (Absolute Positioning)
 
 Components are positioned absolutely:
 
 ```javascript
+// Using end keywords
 screen MyScreen
     label MyLabel
         text "Hello"
@@ -272,6 +364,19 @@ screen MyScreen
         at x:10 y:50
     end button
 end screen
+
+// Using curly braces (alternative)
+screen MyScreen {
+    label MyLabel {
+        text "Hello"
+        at x:10 y:10
+    }
+    
+    button MyButton {
+        text "Click"
+        at x:10 y:50
+    }
+}
 ```
 
 ### Vertical Layout
@@ -1494,6 +1599,126 @@ end textbox
 - `min length N` - Minimum length
 - `max length N` - Maximum length
 - `range min:N max:M` - Value range
+
+### Screen Serialization and JSON
+
+Screens can be serialized to JSON format for saving and loading. This enables dynamic screen creation, screen templates, and screen persistence.
+
+#### Printing Screen as JSON
+
+Use `print` (without the `screen` keyword) to output the JSON representation:
+
+```javascript
+screen MyScreen
+    title "Sample Screen"
+    width 800
+    height 600
+    
+    label WelcomeLabel
+        text "Welcome!"
+    end label
+    
+    button ClickButton
+        text "Click Me"
+    end button
+end screen
+
+main
+    // Print the screen definition as JSON
+    print MyScreen
+end main
+```
+
+This outputs a JSON string representing the entire screen structure, including:
+- Screen properties (title, width, height, etc.)
+- All components and their properties
+- Layout configuration
+- Event handlers (as references)
+
+#### Converting Screen to JSON
+
+```javascript
+// Get screen as JSON string using .toJSON()
+var screenJson = MyScreen.toJSON()
+
+// Alternative: Use .toString() (returns same JSON string)
+var screenStr = MyScreen.toString()
+
+// Save to file
+write screenJson to file "screens/myscreen.json"
+
+// Send over network
+send screenJson to server
+```
+
+#### Loading Screen from JSON
+
+```javascript
+// Load JSON from file
+var jsonString = read file "screens/myscreen.json"
+
+// Create screen from JSON
+var loadedScreen = screen.fromJSON(jsonString)
+
+// Show the loaded screen
+show screen loadedScreen
+```
+
+#### Use Cases for JSON Serialization
+
+**1. Screen Templates:**
+```javascript
+// Save a screen as a template using .toJSON()
+var templateJson = MyScreen.toJSON()
+
+// Alternative: Use .toString() (returns same JSON string)
+var templateStr = MyScreen.toString()
+
+write templateJson to file "templates/form_template.json"
+
+// Later, load and customize
+var template = screen.fromJSON(read file "templates/form_template.json")
+```
+
+**2. Dynamic Screen Creation:**
+```javascript
+// Generate screen JSON programmatically
+var screenDef = {
+    "type": "screen",
+    "name": "DynamicScreen",
+    "title": "Generated Screen",
+    "components": [
+        {
+            "type": "label",
+            "name": "Label1",
+            "text": "Dynamic content"
+        }
+    ]
+}
+
+var dynamicScreen = screen.fromJSON(screenDef.toJSON())
+show screen dynamicScreen
+```
+
+**3. Screen Version Control:**
+```javascript
+// Export current screen state using .toJSON()
+var currentVersion = MyScreen.toJSON()
+
+// Alternative: Use .toString() (returns same JSON string)
+var currentVersionStr = MyScreen.toString()
+
+write currentVersion to file "versions/myscreen_v2.json"
+
+// Compare with previous version
+var previousVersion = read file "versions/myscreen_v1.json"
+```
+
+**Important Notes:**
+- The normal screen definition language is the preferred way to define screens
+- JSON serialization is primarily for programmatic manipulation, templates, and persistence
+- Event handlers are serialized as references, not executable code
+- Complex nested screens may require special handling
 
 ---
 

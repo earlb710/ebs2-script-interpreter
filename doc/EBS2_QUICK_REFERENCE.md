@@ -48,7 +48,7 @@ end main
 | `number` | Integer or decimal | `42` or `3.14` |
 | `number 0..100` | Ranged integer | `85` (0-100 only) |
 | `number -1.0..1.0` | Ranged decimal | `0.5` (-1.0 to 1.0) |
-| `flag` | Boolean true/false | `true` or `false` |
+| `flag` | Boolean true/false | `true/false` or `yes/no` |
 | `array` | Collection of values | `[1, 2, 3]` |
 | `array.text` | Array of text | `["a", "b", "c"]` |
 | `array.number` | Array of numbers | `[1, 2, 3]` |
@@ -345,13 +345,13 @@ record type PersonType
     name as text
     age as number
     email as text
-end record
+end type
 
 // Extend record with more fields
 record type EmployeeType extends PersonType
     employeeId as number
     department as text
-end record
+end type
 
 var person as PersonType = {
     name: "Alice",
@@ -389,9 +389,43 @@ person.addField("phone", "555-1234")
 person.removeField("email")
 var copy = person.copy()
 var merged = person.merge(otherRecord)
-var json = person.toJSON()
+var json = person.toJSON()                   // JSON string
+var str = person.toString()                  // Same as toJSON()
 var fromJSON = record.fromJSON(json)
 ```
+
+---
+
+## Data Type Methods
+
+### Universal toString() Method
+
+All data types support `.toString()` for string conversion:
+
+```javascript
+// Basic types
+var count = 42
+var countStr = count.toString()              // "42"
+
+var name = "Alice"
+var nameStr = name.toString()                // "Alice"
+
+var isReady = true
+var readyStr = isReady.toString()            // "true"
+
+// Arrays (JSON format)
+var numbers = {1, 2, 3}
+var numbersStr = numbers.toString()          // "[1,2,3]"
+
+// Records (JSON format)
+var person = record { name: "Bob", age: 25 }
+var personStr = person.toString()            // '{"name":"Bob","age":25}'
+
+// Screens (JSON format)
+var screenStr = MyScreen.toString()          // JSON representation
+```
+
+**Note:** For records and screens, `.toString()` returns the same JSON string as `.toJSON()`.
 
 ---
 
@@ -400,6 +434,7 @@ var fromJSON = record.fromJSON(json)
 ### Basic Screen
 
 ```javascript
+// Traditional syntax
 screen MyWindow
     title "My Application"
     
@@ -415,10 +450,53 @@ screen MyWindow
     end button
 end screen
 
+// Curly braces syntax with = assignment
+screen MyWindow {
+    title = "My Application";
+    
+    label WelcomeLabel
+        text "Welcome!"
+    end label
+    
+    button ClickButton
+        text "Click Me"
+        if clicked
+            print "Button clicked!"
+        end when
+    end button
+}
+
 main
-    print screen MyWindow
+    show screen MyWindow
 end main
 ```
+
+### Screen Property Syntax
+
+```javascript
+// Traditional syntax
+screen DialogScreen
+    modal yes
+    closable yes
+    resizable no
+end screen
+
+// Curly braces syntax with yes/no
+screen DialogScreen {
+    modal = yes;
+    closable = yes;
+    resizable = no;
+}
+
+// Curly braces syntax with true/false (equivalent)
+screen DialogScreen {
+    modal = true;      // Same as yes
+    closable = true;   // Same as yes
+    resizable = false; // Same as no
+}
+```
+
+**Note:** Both `yes/no` and `true/false` are supported for flag properties.
 
 ### Screen Components
 
@@ -429,6 +507,24 @@ end main
 | `textbox` | Text input | `placeholder "Enter name"` |
 | `numberbox` | Number input | `minimum 0, maximum 100` |
 | `checkbox` | Toggle option | `checked yes/no` |
+
+### Screen Operations
+
+```javascript
+// Show screen on UI
+show screen MyScreen
+
+// Hide screen
+hide screen MyScreen
+
+// Print screen as JSON (for save/load)
+print MyScreen              // Outputs JSON
+var json = MyScreen.toJSON()
+var str = MyScreen.toString()                // Same as toJSON()
+var loaded = screen.fromJSON(json)
+```
+
+**Note:** Use `show screen` to display screens. Use `print <ScreenName>` (without `screen`) to output JSON for serialization. Both `.toJSON()` and `.toString()` return the same JSON string.
 
 ---
 
@@ -480,7 +576,7 @@ end if
 // With named record types
 record type PersonType
     name as text
-end record
+end type
 
 var person as PersonType = record { name: "Bob" }
 
@@ -716,18 +812,41 @@ var x = 10; var y = 20; print x + y
 ```
 
 ### Block Styles
-Choose between `end` keywords or `{}` braces (pick one style per project):
+**Both `end` keywords and `{}` braces are valid for ALL constructs** (control flow, functions, screens, UI components):
+
 ```javascript
-// With end keywords
+// Control flow with end keywords
 if x > 0 then
     print "Positive"
 end if
 
-// With curly braces
+// Control flow with curly braces  
 if x > 0 {
     print "Positive"
 }
+
+// Functions with end keywords
+function add(a as number, b as number) as number
+    return a + b
+end function
+
+// Functions with curly braces
+function add(a as number, b as number) as number {
+    return a + b
+}
+
+// Screen components with end keywords
+label MyLabel
+    text "Hello"
+end label
+
+// Screen components with curly braces
+label MyLabel {
+    text "Hello"
+}
 ```
+
+**Note:** You can mix styles within your code - use whichever feels most natural for each situation.
 
 ### Type Inference
 Types can be inferred from values:

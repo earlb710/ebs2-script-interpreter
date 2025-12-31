@@ -494,7 +494,7 @@ screen HelloScreen
 end screen
 
 main
-    print screen HelloScreen
+    show screen HelloScreen
 end main
 ```
 
@@ -524,7 +524,7 @@ screen InputScreen
 end screen
 
 main
-    print screen InputScreen
+    show screen InputScreen
 end main
 ```
 
@@ -562,7 +562,7 @@ screen CounterScreen
 end screen
 
 main
-    print screen CounterScreen
+    show screen CounterScreen
 end main
 ```
 

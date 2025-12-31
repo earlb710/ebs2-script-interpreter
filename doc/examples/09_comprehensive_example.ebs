@@ -9,14 +9,14 @@ record type TaskType
     priority as text
     completed as flag
     dueDate as date
-end record
+end type
 
 record type ProjectType
     name as text
     owner as text
     tasks as array.record
     createdDate as date
-end record
+end type
 
 // Function to create a new task
 function createTask(id as number, title as text, description as text, priority as text, dueDate as date) as TaskType

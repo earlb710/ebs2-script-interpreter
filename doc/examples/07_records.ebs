@@ -6,20 +6,20 @@ record type PersonType
     name as text
     age as number
     email as text
-end record
+end type
 
 // Define record with extension
 record type EmployeeType extends PersonType
     employeeId as number
     department as text
     salary as number
-end record
+end type
 
 // Define record with further extension
 record type ManagerType extends EmployeeType
     teamSize as number
     budget as number
-end record
+end type
 
 // Define record with array field
 record type CourseType
@@ -27,7 +27,7 @@ record type CourseType
     instructor as text
     students as array.text
     grades as array.number
-end record
+end type
 
 main
     print "=== Basic Record Usage ==="

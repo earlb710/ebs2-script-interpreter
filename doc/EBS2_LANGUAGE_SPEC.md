@@ -172,9 +172,11 @@ print USERNAME            // "BOB"
 ```javascript
 yes         // Boolean true (beginner-friendly)
 no          // Boolean false
-true        // Also supported
-false       // Also supported
+true        // Also supported (same as yes)
+false       // Also supported (same as no)
 ```
+
+**Note:** Both `yes/no` and `true/false` are fully supported and interchangeable. Use whichever feels more natural for your code.
 
 #### List Literals
 ```javascript
@@ -307,7 +309,7 @@ end screens
 // Required: Main entry point
 main
     // Program starts here
-    print screen MainWindow
+    show screen MainWindow
 end main
 ```
 
@@ -415,6 +417,8 @@ EBS2 supports curly braces `{}` as an alternative to the explicit `end` keywords
 
 #### Syntax Forms Comparison
 
+**Both syntax forms are valid and interchangeable for ALL constructs in EBS2:**
+
 | Feature | End Keyword Form | Curly Brace Form |
 |---------|------------------|------------------|
 | **If Statement** | `if x > 5 then ... end if` | `if x > 5 { ... }` |
@@ -423,6 +427,12 @@ EBS2 supports curly braces `{}` as an alternative to the explicit `end` keywords
 | **While Loop** | `while condition loop ... end while` | `while condition loop { ... }` |
 | **Function** | `to func ... end function` | `function func() { ... }` |
 | **Try-Catch** | `try ... catch ... end try` | `try { ... } catch { ... }` |
+| **Screen** | `screen MyScreen ... end screen` | `screen MyScreen { ... }` |
+| **Label** | `label MyLabel ... end label` | `label MyLabel { ... }` |
+| **Button** | `button MyBtn ... end button` | `button MyBtn { ... }` |
+| **Record Type** | `record type Person ... end type` | `record type Person { ... }` |
+
+**Note:** You can mix and match styles within your code. Choose the style that feels most comfortable for each situation.
 
 #### If Statements with Curly Braces
 
@@ -659,13 +669,24 @@ var empty as text = ""
 
 #### flag
 ```javascript
+// Using true/false
 var isReady as flag = true
 var gameOver as flag = false
+
+// Using yes/no (equivalent)
+var isReady as flag = yes
+var gameOver as flag = no
+
+// Both forms are interchangeable
+var status1 as flag = true    // Same as yes
+var status2 as flag = false   // Same as no
 
 // Can use in conditions
 if isReady then print "Ready to start!"
 if not gameOver then print "Game continues"
 ```
+
+**Note:** Both `true/false` and `yes/no` are fully supported for flag values and are completely interchangeable.
 
 #### date
 ```javascript
@@ -816,7 +837,7 @@ record type Person
     name as text
     age as number
     email as text
-end function
+end type
 
 // Alternative with curly braces
 record type Student {
@@ -849,7 +870,7 @@ record type Address
     street as text
     city as text
     zipCode as text
-end function
+end type
 
 record type Employee {
     name as text
@@ -877,7 +898,7 @@ record type Team
     name as text
     members as array.text
     scores as array.number
-end label
+end type
 
 var team as Team = record {
     name: "Tigers",
@@ -900,7 +921,7 @@ record type Course
     instructor as text
     students as array.record(Student)
     grades as array.number
-end record
+end type
 
 var course as Course = record {
     title: "Math 101",
@@ -1048,7 +1069,7 @@ record type Student
     name as text
     age as number
     grade as number
-end function
+end type
 
 var students as array.record(Student) = {
     record { name: "Alice", age: 10, grade: 95 },
@@ -1102,20 +1123,20 @@ for each point in points {
 record type PersonType
     name as text
     age as number
-end record
+end type
 
 // Extend PersonType with additional fields
 record type EmployeeType extends PersonType
     employeeId as number
     department as text
     salary as number
-end record
+end type
 
 // Extend EmployeeType further
 record type ManagerType extends EmployeeType
     teamSize as number
     budget as number
-end record
+end type
 
 // Create instances
 var emp as EmployeeType = record {
@@ -1227,6 +1248,9 @@ var merged = person.merge(contact)
 // Get record as JSON string
 var json = person.toJSON()                   // '{"name":"Alice","age":31,"email":"alice@example.com"}'
 
+// Alternative: Use .toString() (returns same JSON string)
+var str = person.toString()                  // '{"name":"Alice","age":31,"email":"alice@example.com"}'
+
 // Create record from JSON string
 var fromJSON = record.fromJSON(json)
 ```
@@ -1238,6 +1262,112 @@ var fromJSON = record.fromJSON(json)
 - ✅ **Serialization** - Convert to/from JSON for storage or transmission
 - ✅ **Copying** - Create independent copies of records
 - ✅ **Merging** - Combine data from multiple records
+
+### Universal toString() Method
+
+All data types in EBS2 support the `.toString()` method, which converts values to their string representation. For complex types like records and screens, `.toString()` returns a JSON string.
+
+#### Basic Types
+
+```javascript
+// number to string
+var count = 42
+var countStr = count.toString()              // "42"
+
+var price = 19.99
+var priceStr = price.toString()              // "19.99"
+
+// text to string (returns itself)
+var name = "Alice"
+var nameStr = name.toString()                // "Alice"
+
+// flag to string
+var isReady = true
+var readyStr = isReady.toString()            // "true"
+
+var isDone = false
+var doneStr = isDone.toString()              // "false"
+
+// date to string
+var birthday = "2015-03-15"
+var birthdayStr = birthday.toString()        // "2015-03-15"
+```
+
+#### Collection Types
+
+```javascript
+// array to string (JSON array format)
+var numbers = {1, 2, 3, 4, 5}
+var numbersStr = numbers.toString()          // "[1,2,3,4,5]"
+
+var fruits = {"apple", "banana", "cherry"}
+var fruitsStr = fruits.toString()            // '["apple","banana","cherry"]'
+
+// indicator to string
+var status as indicator ("pending", "active", "complete") = "active"
+var statusStr = status.toString()            // "active"
+
+// map to string (JSON object format)
+var settings as map = map {
+    "theme": "dark",
+    "fontSize": 14
+}
+var settingsStr = settings.toString()        // '{"theme":"dark","fontSize":14}'
+```
+
+#### Record to String (JSON)
+
+```javascript
+// record to string returns JSON
+var person = record {
+    name: "Alice",
+    age: 30,
+    email: "alice@example.com"
+}
+
+var personStr = person.toString()
+// Returns: '{"name":"Alice","age":30,"email":"alice@example.com"}'
+
+// .toString() is equivalent to .toJSON() for records
+var json = person.toJSON()
+// Both return the same JSON string
+```
+
+#### Screen to String (JSON)
+
+```javascript
+screen MyScreen
+    title "Sample Screen"
+    width 800
+    height 600
+    
+    label WelcomeLabel
+        text "Welcome!"
+    end label
+end screen
+
+// Convert screen to JSON string
+var screenStr = MyScreen.toString()
+// Returns JSON representation of the entire screen structure
+
+// .toString() is equivalent to .toJSON() for screens
+var screenJson = MyScreen.toJSON()
+// Both return the same JSON string
+```
+
+**Use Cases for toString():**
+- **Logging and debugging** - Convert any value to string for display
+- **String concatenation** - Combine values in messages
+- **Serialization** - Save complex objects as JSON strings
+- **Type conversion** - Explicit conversion to string representation
+- **Data export** - Convert data structures to portable format
+
+**Benefits:**
+- ✅ **Universal method** - Works on all data types
+- ✅ **Consistent behavior** - Predictable string conversion
+- ✅ **JSON for complex types** - Records and screens serialize to JSON
+- ✅ **Type-safe** - Always returns a valid string
+- ✅ **Debugging friendly** - Easy to inspect values
 
 
 #### map
@@ -2286,9 +2416,49 @@ end label
 
 // Show the screen
 main
-    print screen HelloScreen
+    show screen HelloScreen
 end main
 ```
+
+### Screen Syntax Alternatives
+
+EBS2 supports two syntax styles for screen properties:
+
+```javascript
+// Traditional syntax
+screen MyScreen
+    title "Dialog Box"
+    width 400
+    height 300
+    modal yes
+    closable yes
+    resizable no
+end screen
+
+// Curly braces syntax with = assignment
+screen MyScreen {
+    title = "Dialog Box";
+    width = 400;
+    height = 300;
+    modal = yes;
+    closable = yes;
+    resizable = no;
+}
+
+// Flag properties support both yes/no and true/false
+screen DialogScreen {
+    modal = true;      // Same as yes
+    closable = true;   // Same as yes
+    resizable = false; // Same as no
+    movable = true;    // Same as yes
+}
+```
+
+**Note:** 
+- Both syntax styles are supported and equivalent
+- For flag properties, both `yes/no` and `true/false` are interchangeable
+- Curly braces syntax uses `=` for assignment and semicolons are optional
+- Choose the style that feels most natural for your code
 
 ### Screen with Layout (Intermediate)
 
@@ -2511,6 +2681,159 @@ canvas DrawingCanvas
 end canvas
 ```
 
+### Alternative Syntax: Curly Braces for UI Components
+
+**All UI components support both `end` keywords and curly braces `{}`:**
+
+```javascript
+// Using end keywords (traditional)
+label MyLabel
+    text "Hello World"
+    size large
+    color blue
+end label
+
+// Using curly braces (alternative)
+label MyLabel {
+    text "Hello World"
+    size large
+    color blue
+}
+
+// Both forms are equivalent and valid
+
+// Button with end keyword
+button SubmitButton
+    text "Submit"
+    style primary
+    if clicked
+        print "Submitted!"
+    end when
+end button
+
+// Button with curly braces
+button SubmitButton {
+    text "Submit"
+    style primary
+    if clicked {
+        print "Submitted!"
+    }
+}
+
+// Textbox with end keyword
+textbox EmailInput
+    placeholder "Enter email..."
+    max length 100
+    if changed
+        var email = get text from EmailInput
+        print "Email: " + email
+    end when
+end textbox
+
+// Textbox with curly braces
+textbox EmailInput {
+    placeholder "Enter email..."
+    max length 100
+    if changed {
+        var email = get text from EmailInput
+        print "Email: " + email
+    }
+}
+```
+
+**Key Points:**
+- ✅ **Both styles work for all components**: labels, buttons, textboxes, checkboxes, radio groups, dropdowns, listboxes, canvas, etc.
+- ✅ **Mix and match**: You can use `end` for some components and `{}` for others in the same screen
+- ✅ **Nested blocks**: Event handlers (`if clicked`, `if changed`, etc.) can also use either style
+- ✅ **Choose what feels natural**: Use the style you're most comfortable with
+
+### Screen Management and Operations
+
+#### Showing and Hiding Screens
+
+```javascript
+// Show a screen
+show screen MyScreen
+
+// Show as modal (blocks other screens)
+show screen DialogScreen as modal
+
+// Show at specific position
+show screen PopupScreen at x:100 y:100
+
+// Show maximized or fullscreen
+show screen MainScreen maximized
+show screen GameScreen fullscreen
+
+// Hide a screen
+hide screen MyScreen
+
+// Hide current screen
+hide current screen
+
+// Switch to another screen
+switch to screen NewScreen
+```
+
+#### Screen State and Queries
+
+```javascript
+// Check if screen is visible
+if screen MyScreen is visible
+    print "Screen is showing"
+end if
+
+// Check if screen exists
+if screen MyScreen exists
+    hide screen MyScreen
+end if
+
+// Get current screen name
+var currentScreen = get current screen
+print "Current screen: " + currentScreen
+```
+
+#### Screen Serialization (JSON)
+
+Use `print <ScreenName>` (without `screen` keyword) to output JSON for save/load operations:
+
+```javascript
+screen MyScreen
+    title "Sample Screen"
+    width 800
+    height 600
+    
+    label WelcomeLabel
+        text "Welcome!"
+    end label
+end screen
+
+// Output screen as JSON string
+print MyScreen
+
+// Convert screen to JSON for saving (using .toJSON())
+var screenJson = MyScreen.toJSON()
+write screenJson to file "screens/myscreen.json"
+
+// Alternative: Use .toString() (returns same JSON string)
+var screenStr = MyScreen.toString()
+write screenStr to file "screens/myscreen2.json"
+
+// Load screen from JSON
+var jsonData = read file "screens/myscreen.json"
+var loadedScreen = screen.fromJSON(jsonData)
+show screen loadedScreen
+```
+
+**Use Cases for Screen JSON:**
+- Save and load screen definitions
+- Create screen templates
+- Generate screens dynamically
+- Version control for screen designs
+- Network transmission of screen layouts
+
+**Important:** The normal screen definition language is the primary way to create screens. JSON serialization is for programmatic manipulation, templates, and persistence.
+
 ## Error Handling
 
 ### Automatic Error Handling (Beginner)
@@ -2593,6 +2916,9 @@ print line "Hello World"
 // Print without new line
 print "Hello " then print "World"
 
+// Print screen as JSON (for serialization, save/load)
+print MyScreen              // Outputs JSON representation of screen
+
 // Log to debug log (writes to log file, viewable in debug view)
 log "Debug message"
 log "Variable value:", myVariable
@@ -2603,6 +2929,8 @@ clear screen
 
 **Note:** 
 - `print` outputs to the main display (HTML document or JavaFX text area)
+- `print <ScreenName>` (without `screen` keyword) outputs the JSON representation of a screen for serialization
+- `show screen <ScreenName>` is used to display/show a screen on the UI
 - `log` writes to a debug log file and debug view (available on both HTML5 and JavaFX)
 - Both commands work identically across HTML5 and JavaFX platforms
 
@@ -3352,7 +3680,7 @@ var students as array.record(StudentType) = { /* ... */ }
 record type PersonType
     name as text
     age as number
-end record
+end type
 
 var employee as PersonType = record { name: "Alice", age: 30 }
 
@@ -3842,7 +4170,7 @@ See section [Built-in Functions](#built-in-functions) for detailed documentation
 - List Operations (count, filter, sort, ...)
 - Date/Time (today, current time, format, ...)
 - File Operations (read, write, exists, ...)
-- Screen Operations (print screen, hide screen, ...)
+- Screen Operations (show screen, hide screen, print JSON, ...)
 
 ### Appendix D: Migration Checklist
 
