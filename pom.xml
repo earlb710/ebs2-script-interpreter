@@ -119,6 +119,13 @@
             <version>${jersey.version}</version>
         </dependency>
         
+        <!-- Grizzly HTTP Server for embedded server support -->
+        <dependency>
+            <groupId>org.glassfish.jersey.containers</groupId>
+            <artifactId>jersey-container-grizzly2-http</artifactId>
+            <version>${jersey.version}</version>
+        </dependency>
+        
         <!-- Batik 1.17 - Override transitive 1.8 dependencies with fixed versions -->
         <!-- These explicit dependencies override the 1.8 versions from javafxsvg -->
         <!-- Batik 1.17+ has proper module descriptors without broken service providers -->
