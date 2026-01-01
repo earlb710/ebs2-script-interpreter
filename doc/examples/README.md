@@ -199,6 +199,26 @@ A comprehensive demonstration of advanced record structures in a company managem
 
 ---
 
+### 10_parser_example.ebs
+**Parser Demonstration:**
+A script specifically designed to demonstrate the parser's capabilities:
+- Variable declarations with type annotations
+- Expressions with operator precedence
+- Comparison and logical expressions
+- Conditional statements (if-then-else)
+- Print statements with various expressions
+- Unary expressions (negation, logical NOT)
+- Grouped expressions with parentheses
+- Natural language operators
+
+**Key Concepts:**
+- Parser handles all statement types
+- Operator precedence is correctly enforced
+- Error recovery at statement boundaries
+- Detailed error messages with line/column info
+
+---
+
 ## Running the Examples
 
 To run any example script:
@@ -227,6 +247,7 @@ Recommended order for learning:
 8. **08_dates.ebs** - Date operations
 9. **09_comprehensive_example.ebs** - Complete application
 10. **10_complex_records.ebs** - Advanced record structures (enterprise-level)
+11. **10_parser_example.ebs** - Parser demonstration (syntax verification)
 
 ## Key Language Features Demonstrated
 

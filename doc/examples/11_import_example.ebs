@@ -1,0 +1,28 @@
+// EBS2 Import Statement Example
+// This script demonstrates the import functionality
+
+program ImportExample
+
+// Import statements must come first
+import "math_utils.ebs"
+import "string_helpers.ebs"
+import "common.ebs"
+
+// Variable declarations come after imports
+var pi as number = 3.14159
+var radius as number = 5
+
+// Calculate area using imported function (when interpreter is ready)
+var area = pi * radius * radius
+
+// Print results
+print "Radius: "
+print radius
+print "Area: "
+print area
+
+// Note: Import statements are automatically placed at the beginning
+// even if they appear mixed with other statements in the source code.
+// The parser enforces that all imports must come before other statements.
+
+end program
