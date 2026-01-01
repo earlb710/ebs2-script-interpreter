@@ -17,6 +17,8 @@ This directory contains the complete specification for EBS2 - a redesigned scrip
 | [EBS1_VS_EBS2_COMPARISON.md](EBS1_VS_EBS2_COMPARISON.md) | Migration guide from EBS1 to EBS2 |
 | [EBS2_QUICK_START_GUIDE.md](EBS2_QUICK_START_GUIDE.md) | Beginner-friendly tutorial |
 | [EBS2_QUICK_REFERENCE.md](EBS2_QUICK_REFERENCE.md) | One-page quick reference card |
+| [COMPLEX_RECORD_DEFINITIONS.md](COMPLEX_RECORD_DEFINITIONS.md) | Comprehensive guide to complex record structures |
+| [ANSWER_COMPLEX_RECORDS.md](ANSWER_COMPLEX_RECORDS.md) | Quick answer: What do complex records look like? |
 | [EBS2_DOCS_STRUCTURE.txt](EBS2_DOCS_STRUCTURE.txt) | Visual documentation tree |
 
 ## 📋 Quality Assurance
