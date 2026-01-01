@@ -386,12 +386,14 @@ public class Parser {
     private Expression parsePrimary() throws ParserException {
         // Number literal
         if (match(TokenType.NUMBER)) {
-            return new LiteralExpression(previous(), previous().getLiteral());
+            Token token = previous();
+            return new LiteralExpression(token, token.getLiteral());
         }
         
         // Text literal
         if (match(TokenType.TEXT)) {
-            return new LiteralExpression(previous(), previous().getLiteral());
+            Token token = previous();
+            return new LiteralExpression(token, token.getLiteral());
         }
         
         // Boolean literals
