@@ -4,153 +4,154 @@
 // - Multiple inheritance chains
 // - Arrays of records within records
 // - Records with all data types (text, number, flag, date, indicator, arrays)
+// - Field attributes (mandatory, default values, max length constraints)
 // - Practical business scenario: Company Management System
 
 // ============================================================
-// BASIC RECORD TYPE HIERARCHY
+// BASIC RECORD TYPE HIERARCHY WITH FIELD ATTRIBUTES
 // ============================================================
 
-// Base person type
+// Base person type with mandatory and length constraints
 record type PersonType
-    firstName as text
-    lastName as text
+    firstName as text mandatory maxlength:100
+    lastName as text mandatory maxlength:100
     dateOfBirth as date
-    email as text
-    phone as text
+    email as text mandatory maxlength:100
+    phone as text maxlength:20
 end type
 
-// Base address type
+// Base address type with constraints and defaults
 record type AddressType
-    street as text
-    city as text
-    state as text
-    zipCode as text
-    country as text
+    street as text mandatory maxlength:200
+    city as text mandatory maxlength:100
+    state as text mandatory maxlength:50
+    zipCode as text mandatory maxlength:10
+    country as text default:"USA" maxlength:100
 end type
 
 // ============================================================
-// EXTENDED EMPLOYEE HIERARCHY
+// EXTENDED EMPLOYEE HIERARCHY WITH ATTRIBUTES
 // ============================================================
 
 // Employee extends Person with work-related fields
 record type EmployeeType extends PersonType
-    employeeId as number
-    department as text
-    position as text
-    hireDate as date
-    salary as number
+    employeeId as number mandatory
+    department as text default:"Unassigned" maxlength:100
+    position as text mandatory maxlength:100
+    hireDate as date mandatory
+    salary as number default:0
     status as indicator ("active", "on-leave", "terminated") = "active"
-    address as AddressType
+    address as AddressType mandatory
     emergencyContact as PersonType
 end type
 
 // Manager extends Employee with management fields
 record type ManagerType extends EmployeeType
-    teamSize as number
-    budget as number
+    teamSize as number default:0
+    budget as number default:0
     directReports as array.record
     performanceRating as number 0.0..5.0
 end type
 
 // Executive extends Manager with executive-level fields
 record type ExecutiveType extends ManagerType
-    title as text
-    stockOptions as number
-    boardMember as flag
+    title as text mandatory maxlength:100
+    stockOptions as number default:0
+    boardMember as flag default:false
     assistants as array.record
     executiveLevel as indicator ("VP", "SVP", "CXO", "CEO") = "VP"
 end type
 
 // ============================================================
-// PROJECT AND TASK STRUCTURES
+// PROJECT AND TASK STRUCTURES WITH ATTRIBUTES
 // ============================================================
 
-// Task type with dependencies
+// Task type with dependencies and constraints
 record type TaskType
-    taskId as number
-    title as text
-    description as text
-    assignedTo as EmployeeType
+    taskId as number mandatory
+    title as text mandatory maxlength:200
+    description as text maxlength:1000
+    assignedTo as EmployeeType mandatory
     priority as indicator ("low", "medium", "high", "critical") = "medium"
     status as indicator ("not-started", "in-progress", "blocked", "completed") = "not-started"
-    startDate as date
-    dueDate as date
+    startDate as date mandatory
+    dueDate as date mandatory
     completedDate as date
-    estimatedHours as number
-    actualHours as number
+    estimatedHours as number default:0
+    actualHours as number default:0
     dependencies as array.number  // Array of task IDs
     tags as array.text
 end type
 
 // Project type with complex nested structure
 record type ProjectType
-    projectId as number
-    name as text
-    description as text
-    manager as ManagerType
+    projectId as number mandatory
+    name as text mandatory maxlength:200
+    description as text maxlength:2000
+    manager as ManagerType mandatory
     teamMembers as array.record
     tasks as array.record
     milestones as array.record
-    budget as number
-    spent as number
-    startDate as date
-    endDate as date
+    budget as number default:0
+    spent as number default:0
+    startDate as date mandatory
+    endDate as date mandatory
     status as indicator ("planning", "active", "on-hold", "completed", "cancelled") = "planning"
 end type
 
 // Milestone type
 record type MilestoneType
-    milestoneId as number
-    title as text
-    description as text
-    targetDate as date
+    milestoneId as number mandatory
+    title as text mandatory maxlength:200
+    description as text maxlength:1000
+    targetDate as date mandatory
     completedDate as date
-    completed as flag
+    completed as flag default:false
     relatedTasks as array.number  // Array of task IDs
 end type
 
 // ============================================================
-// COMPANY STRUCTURE (DEEPLY NESTED)
+// COMPANY STRUCTURE (DEEPLY NESTED) WITH CONSTRAINTS
 // ============================================================
 
-// Department with full structure
+// Department with full structure and validation
 record type DepartmentType
-    departmentId as number
-    name as text
-    head as ManagerType
+    departmentId as number mandatory
+    name as text mandatory maxlength:100
+    head as ManagerType mandatory
     employees as array.record
     subdepartments as array.record  // Nested departments
-    budget as number
-    location as AddressType
+    budget as number default:0
+    location as AddressType mandatory
     projects as array.record
 end type
 
-// Office location
+// Office location with validation
 record type OfficeType
-    officeId as number
-    name as text
-    address as AddressType
+    officeId as number mandatory
+    name as text mandatory maxlength:100
+    address as AddressType mandatory
     departments as array.record
-    totalEmployees as number
-    squareFeet as number
-    capacity as number
+    totalEmployees as number default:0
+    squareFeet as number default:0
+    capacity as number default:0
 end type
 
 // Company (top-level complex record with everything)
 record type CompanyType
-    companyId as number
-    name as text
-    founded as date
-    headquarters as OfficeType
+    companyId as number mandatory
+    name as text mandatory maxlength:200
+    founded as date mandatory
+    headquarters as OfficeType mandatory
     offices as array.record
-    ceo as ExecutiveType
+    ceo as ExecutiveType mandatory
     executives as array.record
     departments as array.record
     employees as array.record
-    totalRevenue as number
-    fiscalYearEnd as date
-    stockSymbol as text
-    isPublic as flag
+    totalRevenue as number default:0
+    fiscalYearEnd as date mandatory
+    stockSymbol as text maxlength:10
+    isPublic as flag default:false
 end type
 
 // ============================================================
@@ -629,6 +630,7 @@ main
     print "  ✓ Deeply nested records (5+ levels deep)"
     print "  ✓ Arrays of records within records"
     print "  ✓ All data types: text, number, flag, date, indicator"
+    print "  ✓ Field attributes: mandatory, default values, maxlength"
     print "  ✓ Complex business logic and relationships"
     print "  ✓ Type checking with inheritance"
     print "  ✓ Real-world company management scenario"

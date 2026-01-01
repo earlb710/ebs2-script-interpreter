@@ -10,6 +10,7 @@ A complex record definition in EBS2 can include:
 - Arrays of records within records
 - All data types (text, number, flag, date, indicator, arrays)
 - Type constraints (ranges, enumerations)
+- Field attributes (mandatory, default values, max length)
 - Recursive structures
 
 ---
@@ -229,7 +230,38 @@ record type EmployeeType
 end type
 ```
 
-### 5. Type Checking with Inheritance
+### 5. Field Attributes (Validation & Defaults)
+```javascript
+record type UserType
+    // Mandatory fields (must be provided)
+    username as text mandatory maxlength:50
+    email as text mandatory maxlength:100
+    
+    // Optional fields with defaults
+    age as number default:0
+    bio as text maxlength:500
+    isActive as flag default:true
+    loginCount as number default:0
+    
+    // Length-constrained text
+    displayName as text maxlength:100
+    website as text maxlength:200
+end type
+
+// Creating instance - only mandatory fields required
+var user as UserType = record {
+    username: "alice",
+    email: "alice@example.com"
+    // Other fields use defaults or remain unset
+}
+
+// Field attributes provide:
+// - mandatory: Enforces required fields
+// - default:value: Automatic default values
+// - maxlength:n: Text length validation
+```
+
+### 6. Type Checking with Inheritance
 ```javascript
 var exec as ExecutiveType = record { /* ... */ }
 
@@ -272,7 +304,8 @@ end if
 ✅ **5+ levels deep nesting** (company.departments[0].projects[0].tasks[0].assignedTo.address.city)  
 ✅ **Arrays of records** (employees as array.record)  
 ✅ **All data types** (text, number, flag, date, indicator, ranges, arrays)  
-✅ **Type-safe** (indicator enums, range constraints)  
+✅ **Field attributes** (mandatory, default:value, maxlength:n)  
+✅ **Type-safe** (indicator enums, range constraints, length validation)  
 ✅ **Recursive** (subdepartments within departments)  
 ✅ **Real-world ready** (enterprise-level data modeling)
 

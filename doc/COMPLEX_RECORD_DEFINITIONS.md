@@ -5,14 +5,15 @@ This document provides examples and patterns for creating complex record structu
 ## Table of Contents
 
 1. [Basic Record Types](#basic-record-types)
-2. [Record Inheritance (Extension)](#record-inheritance-extension)
-3. [Nested Records](#nested-records)
-4. [Records with Arrays](#records-with-arrays)
-5. [Arrays of Records](#arrays-of-records)
-6. [Records with All Data Types](#records-with-all-data-types)
-7. [Multi-Level Inheritance](#multi-level-inheritance)
-8. [Deep Nesting Patterns](#deep-nesting-patterns)
-9. [Practical Examples](#practical-examples)
+2. [Record Field Attributes](#record-field-attributes)
+3. [Record Inheritance (Extension)](#record-inheritance-extension)
+4. [Nested Records](#nested-records)
+5. [Records with Arrays](#records-with-arrays)
+6. [Arrays of Records](#arrays-of-records)
+7. [Records with All Data Types](#records-with-all-data-types)
+8. [Multi-Level Inheritance](#multi-level-inheritance)
+9. [Deep Nesting Patterns](#deep-nesting-patterns)
+10. [Practical Examples](#practical-examples)
 
 ---
 
@@ -50,6 +51,144 @@ var person = record {
     city: "Boston"
 }
 ```
+
+---
+
+## Record Field Attributes
+
+### Mandatory Fields
+
+Fields marked as `mandatory` must be provided when creating a record instance:
+
+```javascript
+record type UserType
+    username as text mandatory
+    email as text mandatory
+    age as number
+end type
+
+// Valid: all mandatory fields provided
+var user as UserType = record {
+    username: "alice",
+    email: "alice@example.com",
+    age: 25
+}
+
+// Invalid: missing mandatory field
+// var invalid as UserType = record {
+//     username: "bob"
+//     // ERROR: email is mandatory
+// }
+```
+
+### Default Values
+
+Fields with `default:value` get the specified value if not provided:
+
+```javascript
+record type ProductType
+    name as text mandatory
+    price as number default:0.00
+    inStock as number default:0
+    category as text default:"Uncategorized"
+end type
+
+var product as ProductType = record {
+    name: "Widget"
+    // price: 0.00 (default)
+    // inStock: 0 (default)
+    // category: "Uncategorized" (default)
+}
+```
+
+### Maximum Length Constraints
+
+Use `maxlength:n` to limit text field length:
+
+```javascript
+record type CommentType
+    username as text mandatory maxlength:50
+    text as text mandatory maxlength:500
+    email as text maxlength:100
+end type
+
+var comment as CommentType = record {
+    username: "alice",
+    text: "Great article!",
+    email: "alice@example.com"
+}
+
+// Validation occurs at assignment
+comment.text = "Short comment"  // OK
+// comment.text = "Very long..."  // ERROR: exceeds maxlength:500
+```
+
+### Combining Attributes
+
+Multiple attributes can be used together:
+
+```javascript
+record type PersonType
+    name as text mandatory maxlength:100
+    email as text mandatory maxlength:100
+    phone as text maxlength:20
+    age as number default:0
+    bio as text maxlength:2000
+    isActive as flag default:true
+end type
+
+var person as PersonType = record {
+    name: "Charlie",
+    email: "charlie@example.com"
+    // phone: not provided (optional)
+    // age: 0 (default)
+    // bio: not provided (optional)
+    // isActive: true (default)
+}
+```
+
+### Attributes with Nested Records
+
+Field attributes work with nested records:
+
+```javascript
+record type AddressType
+    street as text mandatory maxlength:200
+    city as text mandatory maxlength:100
+    state as text mandatory maxlength:50
+    zipCode as text mandatory maxlength:10
+    country as text default:"USA" maxlength:100
+end type
+
+record type EmployeeType {
+    name as text mandatory maxlength:100
+    email as text mandatory maxlength:100
+    address as AddressType mandatory
+    department as text default:"Unassigned"
+    salary as number default:0
+}
+
+var employee as EmployeeType = record {
+    name: "David",
+    email: "david@company.com",
+    address: record {
+        street: "456 Oak Ave",
+        city: "Boston",
+        state: "MA",
+        zipCode: "02101"
+        // country: "USA" (default)
+    }
+    // department: "Unassigned" (default)
+    // salary: 0 (default)
+}
+```
+
+**Benefits:**
+- ✅ **Required fields** - Enforce mandatory data with `mandatory`
+- ✅ **Default values** - Reduce boilerplate with sensible defaults
+- ✅ **Length validation** - Prevent data overflow with `maxlength:n`
+- ✅ **Self-documenting** - Constraints visible in type definition
+- ✅ **Runtime checks** - Violations caught immediately
 
 ---
 
