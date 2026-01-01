@@ -48,11 +48,9 @@ All language specifications, guides, and documentation are located in the `doc/`
 All tests follow Maven standard structure:
 - **Test Source**: `src/test/java/com/eb/script/` - Test classes mirror source structure
   - `lexer/` - Lexer tests (e.g., `LexerTest.java`, `TokenColorTest.java`)
-  - `parser/` - Parser tests
-  - `runtime/` - Runtime tests
   - `stdlib/` - Standard library tests (e.g., `JSONFunctionsTest.java`)
   - `types/` - Type system tests (e.g., `JSONValueTest.java`)
-  - `server/` - Server tests (e.g., `LocalServerTest.java`)
+- **Server Tests**: `src/test/java/com/eb/server/` - Server tests (e.g., `LocalServerTest.java`)
 
 ### Examples Location (`doc/examples/` directory)
 Example EBS2 scripts demonstrating language features:
