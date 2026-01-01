@@ -864,7 +864,105 @@ print student.name      // "Alice"
 print student.NAME      // "Alice" (same field)
 print student.Age       // 10 (same field)
 student.age = 11        // Update field
+```
 
+**Record Field Attributes** - Add constraints and metadata to fields:
+
+```javascript
+// Field attributes: mandatory, default, maxlength
+record type UserType
+    username as text mandatory maxlength:50
+    email as text mandatory maxlength:100
+    age as number default:0
+    bio as text maxlength:500
+    isActive as flag default:true
+    loginCount as number default:0
+end type
+
+// Alternative syntax with curly braces (both forms are equivalent)
+record type ProductType {
+    productId as number mandatory
+    name as text mandatory maxlength:200
+    description as text maxlength:1000
+    price as number default:0.00      // Default with decimals
+    inStock as number default:0       // Default without decimals (also valid)
+    category as text default:"Uncategorized"
+}
+
+// Creating instances - mandatory fields must be provided
+var user as UserType = record {
+    username: "alice",           // Required (mandatory)
+    email: "alice@example.com"   // Required (mandatory)
+    // age: will be 0 (default)
+    // isActive: will be true (default)
+    // loginCount: will be 0 (default)
+}
+
+// Attempting to create without mandatory fields causes error
+// var invalidUser as UserType = record {
+//     username: "bob"
+//     // ERROR: email is mandatory
+// }
+
+// maxlength validation occurs at assignment
+user.bio = "Short bio"           // OK: within 500 chars
+// user.bio = "Very long text..."  // ERROR: exceeds maxlength:500
+
+// Field attribute summary:
+// - mandatory: Field must be provided when creating record instance
+// - default:value: Field gets this value if not provided
+// - maxlength:n: Text field maximum length (validation on assignment)
+
+// Attributes can be combined
+record type PersonType
+    name as text mandatory maxlength:100
+    email as text mandatory maxlength:100
+    phone as text maxlength:20
+    age as number default:0
+    notes as text maxlength:2000
+end type
+
+// Nested records with attributes
+record type AddressType
+    street as text mandatory maxlength:200
+    city as text mandatory maxlength:100
+    state as text mandatory maxlength:50
+    zipCode as text mandatory maxlength:10
+    country as text default:"USA" maxlength:100
+end type
+
+record type EmployeeType {
+    name as text mandatory maxlength:100
+    email as text mandatory maxlength:100
+    department as text default:"Unassigned"
+    address as AddressType mandatory
+    salary as number default:0
+}
+
+var employee as EmployeeType = record {
+    name: "Charlie",
+    email: "charlie@company.com",
+    address: record {
+        street: "123 Main St",
+        city: "Springfield",
+        state: "IL",
+        zipCode: "62701"
+        // country: will be "USA" (default)
+    }
+    // department: will be "Unassigned" (default)
+    // salary: will be 0 (default)
+}
+```
+
+**Benefits of Field Attributes:**
+- ✅ **Type safety** - Enforce required fields with `mandatory`
+- ✅ **Default values** - Simplify record creation with sensible defaults
+- ✅ **Data validation** - Enforce text length limits with `maxlength`
+- ✅ **Self-documenting** - Field constraints visible in type definition
+- ✅ **Runtime checks** - Violations caught immediately
+- ✅ **Cleaner code** - Less boilerplate for common patterns
+
+```javascript
 // Nested records
 record type Address
     street as text
@@ -1113,6 +1211,7 @@ for each point in points {
 - ✅ **Array.record** - Type-safe arrays of structured data
 - ✅ **Self-documenting** - Record type shows data structure
 - ✅ **Flexible** - Anonymous records for ad-hoc structures
+- ✅ **Field attributes** - `mandatory`, `default:value`, `maxlength:n` for validation
 
 ### Record Extension (Advanced)
 

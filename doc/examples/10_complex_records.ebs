@@ -1,0 +1,637 @@
+// EBS2 Example: Complex Record Definitions
+// This script demonstrates complex, real-world record structures with:
+// - Deep nesting (5+ levels)
+// - Multiple inheritance chains
+// - Arrays of records within records
+// - Records with all data types (text, number, flag, date, indicator, arrays)
+// - Field attributes (mandatory, default values, maxlength constraints)
+// - Practical business scenario: Company Management System
+
+// ============================================================
+// BASIC RECORD TYPE HIERARCHY WITH FIELD ATTRIBUTES
+// ============================================================
+
+// Base person type with mandatory and length constraints
+record type PersonType
+    firstName as text mandatory maxlength:100
+    lastName as text mandatory maxlength:100
+    dateOfBirth as date
+    email as text mandatory maxlength:100
+    phone as text maxlength:20
+end type
+
+// Base address type with constraints and defaults
+record type AddressType
+    street as text mandatory maxlength:200
+    city as text mandatory maxlength:100
+    state as text mandatory maxlength:50
+    zipCode as text mandatory maxlength:10
+    country as text default:"USA" maxlength:100
+end type
+
+// ============================================================
+// EXTENDED EMPLOYEE HIERARCHY WITH ATTRIBUTES
+// ============================================================
+
+// Employee extends Person with work-related fields
+record type EmployeeType extends PersonType
+    employeeId as number mandatory
+    department as text default:"Unassigned" maxlength:100
+    position as text mandatory maxlength:100
+    hireDate as date mandatory
+    salary as number default:0
+    status as indicator ("active", "on-leave", "terminated") = "active"
+    address as AddressType mandatory
+    emergencyContact as PersonType
+end type
+
+// Manager extends Employee with management fields
+record type ManagerType extends EmployeeType
+    teamSize as number default:0
+    budget as number default:0
+    directReports as array.record
+    performanceRating as number 0.0..5.0
+end type
+
+// Executive extends Manager with executive-level fields
+record type ExecutiveType extends ManagerType
+    title as text mandatory maxlength:100
+    stockOptions as number default:0
+    boardMember as flag default:false
+    assistants as array.record
+    executiveLevel as indicator ("VP", "SVP", "CXO", "CEO") = "VP"
+end type
+
+// ============================================================
+// PROJECT AND TASK STRUCTURES WITH ATTRIBUTES
+// ============================================================
+
+// Task type with dependencies and constraints
+record type TaskType
+    taskId as number mandatory
+    title as text mandatory maxlength:200
+    description as text maxlength:1000
+    assignedTo as EmployeeType mandatory
+    priority as indicator ("low", "medium", "high", "critical") = "medium"
+    status as indicator ("not-started", "in-progress", "blocked", "completed") = "not-started"
+    startDate as date mandatory
+    dueDate as date mandatory
+    completedDate as date
+    estimatedHours as number default:0
+    actualHours as number default:0
+    dependencies as array.number  // Array of task IDs
+    tags as array.text
+end type
+
+// Project type with complex nested structure
+record type ProjectType
+    projectId as number mandatory
+    name as text mandatory maxlength:200
+    description as text maxlength:2000
+    manager as ManagerType mandatory
+    teamMembers as array.record
+    tasks as array.record
+    milestones as array.record
+    budget as number default:0
+    spent as number default:0
+    startDate as date mandatory
+    endDate as date mandatory
+    status as indicator ("planning", "active", "on-hold", "completed", "cancelled") = "planning"
+end type
+
+// Milestone type
+record type MilestoneType
+    milestoneId as number mandatory
+    title as text mandatory maxlength:200
+    description as text maxlength:1000
+    targetDate as date mandatory
+    completedDate as date
+    completed as flag default:false
+    relatedTasks as array.number  // Array of task IDs
+end type
+
+// ============================================================
+// COMPANY STRUCTURE (DEEPLY NESTED) WITH CONSTRAINTS
+// ============================================================
+
+// Department with full structure and validation
+record type DepartmentType
+    departmentId as number mandatory
+    name as text mandatory maxlength:100
+    head as ManagerType mandatory
+    employees as array.record
+    subdepartments as array.record  // Nested departments
+    budget as number default:0
+    location as AddressType mandatory
+    projects as array.record
+end type
+
+// Office location with validation
+record type OfficeType
+    officeId as number mandatory
+    name as text mandatory maxlength:100
+    address as AddressType mandatory
+    departments as array.record
+    totalEmployees as number default:0
+    squareFeet as number default:0
+    capacity as number default:0
+end type
+
+// Company (top-level complex record with everything)
+record type CompanyType
+    companyId as number mandatory
+    name as text mandatory maxlength:200
+    founded as date mandatory
+    headquarters as OfficeType mandatory
+    offices as array.record
+    ceo as ExecutiveType mandatory
+    executives as array.record
+    departments as array.record
+    employees as array.record
+    totalRevenue as number default:0
+    fiscalYearEnd as date mandatory
+    stockSymbol as text maxlength:10
+    isPublic as flag default:false
+end type
+
+// ============================================================
+// UTILITY FUNCTIONS
+// ============================================================
+
+// Function to create a full name
+function getFullName(person as PersonType) as text
+    return person.firstName + " " + person.lastName
+end function
+
+// Function to calculate employee tenure
+function calculateTenure(employee as EmployeeType, currentDate as date) as number
+    return currentDate - employee.hireDate
+end function
+
+// Function to calculate project completion percentage
+function getProjectCompletion(project as ProjectType) as number
+    var totalTasks = project.tasks.length
+    if totalTasks = 0 then
+        return 0
+    end if
+    
+    var completedTasks = 0
+    for i = 0 to totalTasks - 1 loop
+        if project.tasks[i].status = "completed" then
+            completedTasks++
+        end if
+    end for
+    
+    return (completedTasks.toNumber() / totalTasks.toNumber() * 100)
+end function
+
+// Function to calculate budget utilization
+function getBudgetUtilization(project as ProjectType) as number
+    if project.budget = 0 then
+        return 0
+    end if
+    return (project.spent / project.budget * 100)
+end function
+
+// Function to count employees by status
+function countEmployeesByStatus(employees as array.record, status as text) as number
+    var count = 0
+    for i = 0 to employees.length - 1 loop
+        if employees[i].status = status then
+            count++
+        end if
+    end for
+    return count
+end function
+
+// ============================================================
+// MAIN PROGRAM - DEMONSTRATION
+// ============================================================
+
+main
+    print "========================================================"
+    print "   Complex Record Definitions - Company Management"
+    print "========================================================"
+    print ""
+    
+    var currentDate as date = "2025-12-29"
+    
+    // --------------------------------------------------------
+    // CREATE COMPLEX NESTED STRUCTURE
+    // --------------------------------------------------------
+    
+    print "=== Creating Company Structure ==="
+    print ""
+    
+    // Create CEO
+    var ceo as ExecutiveType = record {
+        firstName: "Sarah",
+        lastName: "Johnson",
+        dateOfBirth: "1975-03-15",
+        email: "sarah.johnson@techcorp.com",
+        phone: "555-0100",
+        employeeId: 1,
+        department: "Executive",
+        position: "Chief Executive Officer",
+        hireDate: "2010-01-15",
+        salary: 500000,
+        status: "active",
+        address: record {
+            street: "123 Executive Drive",
+            city: "San Francisco",
+            state: "CA",
+            zipCode: "94105",
+            country: "USA"
+        },
+        emergencyContact: record {
+            firstName: "John",
+            lastName: "Johnson",
+            dateOfBirth: "1973-05-20",
+            email: "john.johnson@email.com",
+            phone: "555-0101"
+        },
+        teamSize: 50,
+        budget: 10000000,
+        directReports: {},  // Will be populated later
+        performanceRating: 4.8,
+        title: "Chief Executive Officer",
+        stockOptions: 100000,
+        boardMember: yes,
+        assistants: {},
+        executiveLevel: "CEO"
+    }
+    
+    print "Created CEO: " + getFullName(ceo)
+    print "  Employee ID: " + ceo.employeeId.toText()
+    print "  Position: " + ceo.position
+    print "  Executive Level: " + ceo.executiveLevel
+    print "  Stock Options: " + ceo.stockOptions.toText()
+    print "  Performance Rating: " + ceo.performanceRating.toText(1) + "/5.0"
+    var ceoTenure = calculateTenure(ceo, currentDate)
+    print "  Tenure: " + ceoTenure.toText(0) + " days (" + (ceoTenure / 365).toText(1) + " years)"
+    print ""
+    
+    // Create Engineering Department Manager
+    var engManager as ManagerType = record {
+        firstName: "Michael",
+        lastName: "Chen",
+        dateOfBirth: "1985-07-22",
+        email: "michael.chen@techcorp.com",
+        phone: "555-0200",
+        employeeId: 100,
+        department: "Engineering",
+        position: "VP of Engineering",
+        hireDate: "2015-06-01",
+        salary: 180000,
+        status: "active",
+        address: record {
+            street: "456 Tech Lane",
+            city: "San Francisco",
+            state: "CA",
+            zipCode: "94107",
+            country: "USA"
+        },
+        emergencyContact: record {
+            firstName: "Lisa",
+            lastName: "Chen",
+            dateOfBirth: "1986-09-12",
+            email: "lisa.chen@email.com",
+            phone: "555-0201"
+        },
+        teamSize: 25,
+        budget: 5000000,
+        directReports: {},
+        performanceRating: 4.5
+    }
+    
+    print "Created Manager: " + getFullName(engManager)
+    print "  Department: " + engManager.department
+    print "  Team Size: " + engManager.teamSize.toText()
+    print "  Budget: $" + engManager.budget.toText(0)
+    print ""
+    
+    // Create team members
+    var engineer1 as EmployeeType = record {
+        firstName: "Alice",
+        lastName: "Smith",
+        dateOfBirth: "1992-11-08",
+        email: "alice.smith@techcorp.com",
+        phone: "555-0300",
+        employeeId: 200,
+        department: "Engineering",
+        position: "Senior Software Engineer",
+        hireDate: "2018-03-15",
+        salary: 120000,
+        status: "active",
+        address: record {
+            street: "789 Developer Ave",
+            city: "San Francisco",
+            state: "CA",
+            zipCode: "94110",
+            country: "USA"
+        },
+        emergencyContact: record {
+            firstName: "Bob",
+            lastName: "Smith",
+            dateOfBirth: "1991-05-14",
+            email: "bob.smith@email.com",
+            phone: "555-0301"
+        }
+    }
+    
+    var engineer2 as EmployeeType = record {
+        firstName: "David",
+        lastName: "Rodriguez",
+        dateOfBirth: "1988-04-18",
+        email: "david.rodriguez@techcorp.com",
+        phone: "555-0400",
+        employeeId: 201,
+        department: "Engineering",
+        position: "Staff Software Engineer",
+        hireDate: "2016-09-20",
+        salary: 140000,
+        status: "active",
+        address: record {
+            street: "321 Code Street",
+            city: "Oakland",
+            state: "CA",
+            zipCode: "94612",
+            country: "USA"
+        },
+        emergencyContact: record {
+            firstName: "Maria",
+            lastName: "Rodriguez",
+            dateOfBirth: "1989-07-25",
+            email: "maria.rodriguez@email.com",
+            phone: "555-0401"
+        }
+    }
+    
+    // Create project with tasks
+    var task1 as TaskType = record {
+        taskId: 1,
+        title: "Design API architecture",
+        description: "Design RESTful API for the new microservices",
+        assignedTo: engineer1,
+        priority: "critical",
+        status: "completed",
+        startDate: "2025-11-01",
+        dueDate: "2025-11-15",
+        completedDate: "2025-11-14",
+        estimatedHours: 40,
+        actualHours: 38,
+        dependencies: {},
+        tags: {"architecture", "api", "design"}
+    }
+    
+    var task2 as TaskType = record {
+        taskId: 2,
+        title: "Implement authentication service",
+        description: "Build OAuth2 authentication microservice",
+        assignedTo: engineer2,
+        priority: "high",
+        status: "in-progress",
+        startDate: "2025-11-16",
+        dueDate: "2025-12-15",
+        completedDate: "2000-01-01",  // Placeholder for not completed (year 2000 = not done)
+        estimatedHours: 80,
+        actualHours: 45,
+        dependencies: {1},  // Depends on task 1
+        tags: {"security", "authentication", "microservices"}
+    }
+    
+    var task3 as TaskType = record {
+        taskId: 3,
+        title: "Write API documentation",
+        description: "Create comprehensive API documentation",
+        assignedTo: engineer1,
+        priority: "medium",
+        status: "not-started",
+        startDate: "2025-12-16",
+        dueDate: "2025-12-30",
+        completedDate: "2000-01-01",  // Placeholder for not completed (year 2000 = not done)
+        estimatedHours: 24,
+        actualHours: 0,
+        dependencies: {1, 2},  // Depends on tasks 1 and 2
+        tags: {"documentation", "api"}
+    }
+    
+    // Create milestone
+    var milestone1 as MilestoneType = record {
+        milestoneId: 1,
+        title: "API Design Complete",
+        description: "Complete all API design and architecture",
+        targetDate: "2025-11-30",
+        completedDate: "2025-11-14",
+        completed: yes,
+        relatedTasks: {1}
+    }
+    
+    var milestone2 as MilestoneType = record {
+        milestoneId: 2,
+        title: "Authentication MVP",
+        description: "Complete authentication service MVP",
+        targetDate: "2025-12-31",
+        completedDate: "2000-01-01",  // Placeholder for not completed (year 2000 = not done)
+        completed: no,
+        relatedTasks: {2, 3}
+    }
+    
+    // Create project
+    var project as ProjectType = record {
+        projectId: 1,
+        name: "Microservices Platform",
+        description: "Build next-generation microservices architecture",
+        manager: engManager,
+        teamMembers: {engineer1, engineer2},
+        tasks: {task1, task2, task3},
+        milestones: {milestone1, milestone2},
+        budget: 500000,
+        spent: 187000,
+        startDate: "2025-11-01",
+        endDate: "2026-03-31",
+        status: "active"
+    }
+    
+    print "=== Project Information ==="
+    print "Project: " + project.name
+    print "Manager: " + getFullName(project.manager)
+    print "Team Size: " + project.teamMembers.length.toText()
+    print "Total Tasks: " + project.tasks.length.toText()
+    print "Budget: $" + project.budget.toText(0)
+    print "Spent: $" + project.spent.toText(0)
+    var budgetUtil = getBudgetUtilization(project)
+    print "Budget Utilization: " + budgetUtil.toText(1) + "%"
+    var completion = getProjectCompletion(project)
+    print "Completion: " + completion.toText(1) + "%"
+    print ""
+    
+    // Display task details
+    print "=== Task Breakdown ==="
+    for i = 0 to project.tasks.length - 1 loop
+        var task = project.tasks[i]
+        print "Task #" + task.taskId.toText() + ": " + task.title
+        print "  Assigned: " + getFullName(task.assignedTo)
+        print "  Priority: " + task.priority
+        print "  Status: " + task.status
+        print "  Due: " + task.dueDate.toText()
+        print "  Hours: " + task.actualHours.toText(0) + "/" + task.estimatedHours.toText(0)
+        if task.dependencies.length > 0 then
+            print "  Dependencies: Task IDs " + task.dependencies.toText()
+        end if
+        print "  Tags: " + task.tags.join(", ")
+        print ""
+    end for
+    
+    // Create Engineering Department
+    var engineeringDept as DepartmentType = record {
+        departmentId: 1,
+        name: "Engineering",
+        head: engManager,
+        employees: {engManager, engineer1, engineer2},
+        subdepartments: {},
+        budget: 5000000,
+        location: record {
+            street: "100 Tech Plaza",
+            city: "San Francisco",
+            state: "CA",
+            zipCode: "94105",
+            country: "USA"
+        },
+        projects: {project}
+    }
+    
+    print "=== Department Structure ==="
+    print "Department: " + engineeringDept.name
+    print "Department Head: " + getFullName(engineeringDept.head)
+    print "Total Employees: " + engineeringDept.employees.length.toText()
+    var activeCount = countEmployeesByStatus(engineeringDept.employees, "active")
+    print "Active Employees: " + activeCount.toText()
+    print "Active Projects: " + engineeringDept.projects.length.toText()
+    print "Department Budget: $" + engineeringDept.budget.toText(0)
+    print ""
+    
+    // Create headquarters office
+    var hqOffice as OfficeType = record {
+        officeId: 1,
+        name: "San Francisco HQ",
+        address: record {
+            street: "100 Tech Plaza",
+            city: "San Francisco",
+            state: "CA",
+            zipCode: "94105",
+            country: "USA"
+        },
+        departments: {engineeringDept},
+        totalEmployees: 150,
+        squareFeet: 50000,
+        capacity: 200
+    }
+    
+    // Create the company (top-level complex structure)
+    var company as CompanyType = record {
+        companyId: 1,
+        name: "TechCorp Inc.",
+        founded: "2005-06-15",
+        headquarters: hqOffice,
+        offices: {hqOffice},
+        ceo: ceo,
+        executives: {ceo},
+        departments: {engineeringDept},
+        employees: {ceo, engManager, engineer1, engineer2},
+        totalRevenue: 50000000,
+        fiscalYearEnd: "2025-12-31",
+        stockSymbol: "TECH",
+        isPublic: yes
+    }
+    
+    print "========================================================"
+    print "              COMPANY OVERVIEW"
+    print "========================================================"
+    print ""
+    print "Company: " + company.name
+    print "Stock Symbol: " + company.stockSymbol
+    var publicStatus as text
+    if company.isPublic then
+        publicStatus = "Yes"
+    else
+        publicStatus = "No"
+    end if
+    print "Public Company: " + publicStatus
+    print "Founded: " + company.founded.toText()
+    var companyAge = currentDate - company.founded
+    print "Company Age: " + (companyAge / 365).toText(1) + " years"
+    print ""
+    print "Leadership:"
+    print "  CEO: " + getFullName(company.ceo)
+    print "  CEO Title: " + company.ceo.title
+    print "  Executive Team Size: " + company.executives.length.toText()
+    print ""
+    print "Organization:"
+    print "  Total Employees: " + company.employees.length.toText()
+    print "  Total Departments: " + company.departments.length.toText()
+    print "  Office Locations: " + company.offices.length.toText()
+    print "  HQ Location: " + company.headquarters.address.city + ", " + company.headquarters.address.state
+    print ""
+    print "Financial:"
+    print "  Total Revenue: $" + company.totalRevenue.toText(0)
+    print "  Fiscal Year End: " + company.fiscalYearEnd.toText()
+    print ""
+    
+    // Demonstrate type checking with complex hierarchy
+    print "=== Type Checking Demonstration ==="
+    print ""
+    
+    if ceo typeof ExecutiveType then
+        print "✓ CEO is an ExecutiveType"
+    end if
+    
+    if ceo typeof ManagerType then
+        print "✓ CEO is a ManagerType (inherited)"
+    end if
+    
+    if ceo typeof EmployeeType then
+        print "✓ CEO is an EmployeeType (inherited)"
+    end if
+    
+    if ceo typeof PersonType then
+        print "✓ CEO is a PersonType (inherited)"
+    end if
+    print ""
+    
+    if engineer1 typeof EmployeeType then
+        print "✓ engineer1 is an EmployeeType"
+    end if
+    
+    if engineer1 typeof PersonType then
+        print "✓ engineer1 is a PersonType (inherited)"
+    end if
+    print ""
+    
+    // Demonstrate deep nesting access
+    print "=== Deep Nesting Access ==="
+    print ""
+    print "Accessing: company.headquarters.departments[0].head.emergencyContact.firstName"
+    var emergencyContactName = company.headquarters.departments[0].head.emergencyContact.firstName
+    print "Result: " + emergencyContactName
+    print ""
+    
+    print "Accessing: company.departments[0].projects[0].tasks[0].assignedTo.address.city"
+    var taskAssigneeCity = company.departments[0].projects[0].tasks[0].assignedTo.address.city
+    print "Result: " + taskAssigneeCity
+    print ""
+    
+    print "========================================================"
+    print "         Complex Record Example Completed!"
+    print "========================================================"
+    print ""
+    print "This example demonstrated:"
+    print "  ✓ Multiple levels of record inheritance (4 levels)"
+    print "  ✓ Deeply nested records (5+ levels deep)"
+    print "  ✓ Arrays of records within records"
+    print "  ✓ All data types: text, number, flag, date, indicator"
+    print "  ✓ Field attributes: mandatory, default values, maxlength"
+    print "  ✓ Complex business logic and relationships"
+    print "  ✓ Type checking with inheritance"
+    print "  ✓ Real-world company management scenario"
+end main
