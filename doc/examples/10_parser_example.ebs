@@ -1,0 +1,47 @@
+// EBS2 Parser Demonstration Script
+// This script demonstrates the parsing capabilities of the EBS2 parser
+
+program ParserExample
+
+// Variable declarations with different types
+var age as number = 25
+var name as text = "John"
+var isStudent as flag = true
+
+// Variables with expressions
+var sum = 10 + 20
+var product = 5 * 6
+var complex = (10 + 20) * 3
+
+// Comparison expressions
+var isAdult = age > 18
+var isTeenager = age > 12 and age < 20
+
+// Conditional statements
+if age > 18 then print "Adult"
+
+if isStudent then print "Student discount available" else print "Regular price"
+
+// Print statements with various expressions
+print "Hello, " + name
+print age
+print sum + product
+
+// Unary expressions
+var negated = -10
+var inverted = not isStudent
+
+// Grouped expressions with operator precedence
+var result1 = 2 + 3 * 4        // Should be 2 + (3 * 4) = 14
+var result2 = (2 + 3) * 4      // Should be (2 + 3) * 4 = 20
+
+// Natural language operators
+var comparison = age is greater than 21
+
+// Multiple statements
+var x = 5
+var y = 10
+var z = x + y
+print z
+
+end program
