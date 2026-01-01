@@ -36,7 +36,13 @@ procedure displayTask(task as TaskType)
     print "    Title: " + task.title
     print "    Description: " + task.description
     print "    Priority: " + task.priority
-    print "    Status: " + (task.completed ? "Completed" : "Pending")
+    var status as text
+    if task.completed then
+        status = "Completed"
+    else
+        status = "Pending"
+    end if
+    print "    Status: " + status
     print "    Due Date: " + task.dueDate.toText()
 end procedure
 
@@ -213,7 +219,13 @@ main
     // Summary
     print "======================================="
     print "Summary: " + project.name
-    print "Status: " + (completionRate = 100 ? "Complete" : "In Progress")
+    var statusText as text
+    if completionRate = 100 then
+        statusText = "Complete"
+    else
+        statusText = "In Progress"
+    end if
+    print "Status: " + statusText
     print "Progress: " + completedCount.toText() + "/" + totalTasks.toText() + " tasks completed"
     print "======================================="
     print ""

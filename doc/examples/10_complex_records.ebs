@@ -1,6 +1,6 @@
 // EBS2 Example: Complex Record Definitions
 // This script demonstrates complex, real-world record structures with:
-// - Deep nesting (3+ levels)
+// - Deep nesting (5+ levels)
 // - Multiple inheritance chains
 // - Arrays of records within records
 // - Records with all data types (text, number, flag, date, indicator, arrays)
@@ -392,7 +392,7 @@ main
         status: "in-progress",
         startDate: "2025-11-16",
         dueDate: "2025-12-15",
-        completedDate: "2000-01-01",  // Not completed yet
+        completedDate: "2000-01-01",  // Placeholder for not completed (year 2000 = not done)
         estimatedHours: 80,
         actualHours: 45,
         dependencies: {1},  // Depends on task 1
@@ -408,7 +408,7 @@ main
         status: "not-started",
         startDate: "2025-12-16",
         dueDate: "2025-12-30",
-        completedDate: "2000-01-01",
+        completedDate: "2000-01-01",  // Placeholder for not completed (year 2000 = not done)
         estimatedHours: 24,
         actualHours: 0,
         dependencies: {1, 2},  // Depends on tasks 1 and 2
@@ -431,7 +431,7 @@ main
         title: "Authentication MVP",
         description: "Complete authentication service MVP",
         targetDate: "2025-12-31",
-        completedDate: "2000-01-01",
+        completedDate: "2000-01-01",  // Placeholder for not completed (year 2000 = not done)
         completed: no,
         relatedTasks: {2, 3}
     }
@@ -550,7 +550,13 @@ main
     print ""
     print "Company: " + company.name
     print "Stock Symbol: " + company.stockSymbol
-    print "Public Company: " + (company.isPublic ? "Yes" : "No")
+    var publicStatus as text
+    if company.isPublic then
+        publicStatus = "Yes"
+    else
+        publicStatus = "No"
+    end if
+    print "Public Company: " + publicStatus
     print "Founded: " + company.founded.toText()
     var companyAge = currentDate - company.founded
     print "Company Age: " + (companyAge / 365).toText(1) + " years"
