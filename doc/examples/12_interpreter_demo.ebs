@@ -1,0 +1,103 @@
+// EBS2 Interpreter Example
+// This example demonstrates the basic statement interpreter executing EBS2 code
+
+// Variable declarations
+var name = "Alice"
+var age = 25
+var score = 95
+
+// Print statements
+print "=== Interpreter Demo ==="
+print "Welcome to EBS2!"
+print ""
+
+// Variables with expressions
+var x = 10
+var y = 20
+var sum = x + y
+var product = x * y
+
+print "Variables:"
+print "x = 10"
+print "y = 20"
+print "sum = x + y"
+print sum
+print "product = x * y"
+print product
+print ""
+
+// Conditional statements
+print "Conditionals:"
+if sum > 25 then print "Sum is greater than 25"
+if product > 100 then print "Product is greater than 100" else print "Product is not greater than 100"
+print ""
+
+// Comparison operators
+print "Comparisons:"
+if x < y then print "x is less than y"
+if x >= 10 then print "x is greater than or equal to 10"
+if x == 10 then print "x equals 10"
+print ""
+
+// Logical operators
+print "Logical Operators:"
+if x > 5 and y > 15 then print "Both conditions are true"
+if x < 5 or y > 15 then print "At least one condition is true"
+if not (x > 100) then print "x is not greater than 100"
+print ""
+
+// String operations
+print "String Operations:"
+var greeting = "Hello"
+var fullGreeting = greeting + " " + name
+print fullGreeting
+print ""
+
+// Arithmetic with parentheses
+print "Arithmetic:"
+var result1 = (x + y) * 2
+var result2 = x + y * 2
+print "(x + y) * 2 = (10 + 20) * 2"
+print result1
+print "x + y * 2 = 10 + 20 * 2"
+print result2
+print ""
+
+print "=== Demo Complete ==="
+
+// Expected Output:
+// === Interpreter Demo ===
+// Welcome to EBS2!
+// 
+// Variables:
+// x = 10
+// y = 20
+// sum = x + y
+// 30
+// product = x * y
+// 200
+// 
+// Conditionals:
+// Sum is greater than 25
+// Product is greater than 100
+// 
+// Comparisons:
+// x is less than y
+// x is greater than or equal to 10
+// x equals 10
+// 
+// Logical Operators:
+// Both conditions are true
+// At least one condition is true
+// x is not greater than 100
+// 
+// String Operations:
+// Hello Alice
+// 
+// Arithmetic:
+// (x + y) * 2 = (10 + 20) * 2
+// 60
+// x + y * 2 = 10 + 20 * 2
+// 50
+// 
+// === Demo Complete ===
