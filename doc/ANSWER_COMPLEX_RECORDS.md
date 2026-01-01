@@ -10,7 +10,7 @@ A complex record definition in EBS2 can include:
 - Arrays of records within records
 - All data types (text, number, flag, date, indicator, arrays)
 - Type constraints (ranges, enumerations)
-- Field attributes (mandatory, default values, max length)
+- Field attributes (mandatory, default values, maxlength)
 - Recursive structures
 
 ---

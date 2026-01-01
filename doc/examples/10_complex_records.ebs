@@ -4,7 +4,7 @@
 // - Multiple inheritance chains
 // - Arrays of records within records
 // - Records with all data types (text, number, flag, date, indicator, arrays)
-// - Field attributes (mandatory, default values, max length constraints)
+// - Field attributes (mandatory, default values, maxlength constraints)
 // - Practical business scenario: Company Management System
 
 // ============================================================

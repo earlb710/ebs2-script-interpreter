@@ -879,13 +879,13 @@ record type UserType
     loginCount as number default:0
 end type
 
-// Alternative syntax with curly braces
+// Alternative syntax with curly braces (both forms are equivalent)
 record type ProductType {
     productId as number mandatory
     name as text mandatory maxlength:200
     description as text maxlength:1000
-    price as number default:0.00
-    inStock as number default:0
+    price as number default:0.00      // Default with decimals
+    inStock as number default:0       // Default without decimals (also valid)
     category as text default:"Uncategorized"
 }
 

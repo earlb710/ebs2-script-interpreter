@@ -160,6 +160,7 @@ record type AddressType
     country as text default:"USA" maxlength:100
 end type
 
+// Alternative syntax with curly braces (both forms are equivalent)
 record type EmployeeType {
     name as text mandatory maxlength:100
     email as text mandatory maxlength:100
