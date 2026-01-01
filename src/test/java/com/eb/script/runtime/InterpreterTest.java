@@ -494,7 +494,7 @@ public class InterpreterTest {
     }
     
     @Test
-    @DisplayName("Test variable shadowing in nested scopes")
+    @DisplayName("Test using variable in expression initialization")
     public void testVariableInExpression() {
         String source = """
             var x = 5
