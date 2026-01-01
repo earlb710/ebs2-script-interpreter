@@ -30,8 +30,10 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Parser {
     private final List<Token> tokens;
     private final List<ParseError> errors;
+    private final int tokensSize;  // Cache tokens size for faster bounds checking
     private int current = 0;
     private boolean hasSeenNonImportStatement = false;
+    private boolean printErrors = false;  // Control error printing for performance
     
     // Static cache for parsed results (key: source code hash or identifier)
     private static final Map<String, ParseResult> parseCache = new ConcurrentHashMap<>();
@@ -70,6 +72,7 @@ public class Parser {
      */
     public Parser(List<Token> tokens) {
         this.tokens = tokens;
+        this.tokensSize = tokens.size();  // Cache size for faster bounds checking
         this.errors = new ArrayList<>();
         this.hasSeenNonImportStatement = false;
     }
@@ -108,9 +111,9 @@ public class Parser {
      * @return List of parsed statements
      */
     public List<Statement> parse() {
-        List<Statement> statements = new ArrayList<>();
-        List<Statement> importStatements = new ArrayList<>();
-        List<Statement> otherStatements = new ArrayList<>();
+        // Pre-allocate lists with estimated capacity to reduce resizing
+        List<Statement> importStatements = new ArrayList<>(8);  // Typical imports count
+        List<Statement> otherStatements = new ArrayList<>(32);  // Typical statement count
         
         while (!isAtEnd()) {
             try {
@@ -128,6 +131,10 @@ public class Parser {
                 synchronize();
             }
         }
+        
+        // Optimize final list creation: pre-calculate total size
+        int totalSize = importStatements.size() + otherStatements.size();
+        List<Statement> statements = new ArrayList<>(totalSize);
         
         // Place imports first, then other statements
         statements.addAll(importStatements);
@@ -161,6 +168,17 @@ public class Parser {
      */
     public static int getCacheSize() {
         return parseCache.size();
+    }
+    
+    /**
+     * Enables or disables immediate error printing.
+     * When disabled, errors are still collected but not printed to System.err.
+     * This improves performance when errors will be processed programmatically.
+     * 
+     * @param enabled true to enable error printing, false to disable
+     */
+    public void setPrintErrors(boolean enabled) {
+        this.printErrors = enabled;
     }
     
     /**
@@ -568,10 +586,22 @@ public class Parser {
      * Checks if the current token matches any of the given types.
      * If so, consumes it and returns true.
      * 
+     * Optimized for common single-type checks and multiple types.
+     * 
      * @param types The token types to match
      * @return true if a match was found
      */
     private boolean match(TokenType... types) {
+        // Optimize for single type check (most common case)
+        if (types.length == 1) {
+            if (check(types[0])) {
+                advance();
+                return true;
+            }
+            return false;
+        }
+        
+        // Handle multiple types
         for (TokenType type : types) {
             if (check(type)) {
                 advance();
@@ -584,12 +614,14 @@ public class Parser {
     /**
      * Checks if the current token is of the given type.
      * 
+     * Optimized to avoid redundant isAtEnd() calls since peek() handles bounds.
+     * 
      * @param type The token type to check
      * @return true if the current token matches
      */
     private boolean check(TokenType type) {
-        if (isAtEnd()) return false;
-        return peek().getTokenType() == type;
+        if (current >= tokensSize) return false;
+        return tokens.get(current).getTokenType() == type;
     }
     
     /**
@@ -605,18 +637,26 @@ public class Parser {
     /**
      * Checks if we're at the end of the token stream.
      * 
+     * Optimized to avoid repeated calls to peek() and getTokenType().
+     * 
      * @return true if at EOF
      */
     private boolean isAtEnd() {
-        return peek().getTokenType() == TokenType.EOF;
+        return current >= tokensSize || peek().getTokenType() == TokenType.EOF;
     }
     
     /**
      * Returns the current token without consuming it.
      * 
+     * Optimized with bounds check using cached tokens size.
+     * 
      * @return The current token
      */
     private Token peek() {
+        // Bounds check for safety
+        if (current >= tokensSize) {
+            return tokens.get(tokensSize - 1);  // Return last token (should be EOF)
+        }
         return tokens.get(current);
     }
     
@@ -679,8 +719,10 @@ public class Parser {
         );
         errors.add(parseError);
         
-        // Print error immediately for feedback
-        System.err.println(parseError.toString());
+        // Print error immediately for feedback (only if enabled)
+        if (printErrors) {
+            System.err.println(parseError.toString());
+        }
         
         return new ParserException(message, token);
     }
