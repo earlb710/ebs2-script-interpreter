@@ -6,6 +6,8 @@ import com.eb.script.lexer.TokenType;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Parser for the EBS2 scripting language.
@@ -17,16 +19,49 @@ import java.util.List;
  * - Recursive descent parsing
  * - Detailed error messages with line/column information
  * - Error recovery at synchronization points
- * - Support for basic statements (var, print, if)
+ * - Support for basic statements (var, print, if, import)
  * - Expression parsing with operator precedence
+ * - Parse caching for performance
+ * - Import statement support with enforcement that imports come first
  * 
- * @version 1.0.0
+ * @version 1.1.0
  * @since 2026-01-01
  */
 public class Parser {
     private final List<Token> tokens;
     private final List<ParseError> errors;
     private int current = 0;
+    private boolean hasSeenNonImportStatement = false;
+    
+    // Static cache for parsed results (key: source code hash or identifier)
+    private static final Map<String, ParseResult> parseCache = new ConcurrentHashMap<>();
+    
+    /**
+     * Represents a cached parse result.
+     */
+    public static class ParseResult {
+        private final List<Statement> statements;
+        private final List<ParseError> errors;
+        private final long timestamp;
+        
+        public ParseResult(List<Statement> statements, List<ParseError> errors) {
+            this.statements = new ArrayList<>(statements);
+            this.errors = new ArrayList<>(errors);
+            this.timestamp = System.currentTimeMillis();
+        }
+        
+        public List<Statement> getStatements() {
+            return new ArrayList<>(statements);
+        }
+        
+        public List<ParseError> getErrors() {
+            return new ArrayList<>(errors);
+        }
+        
+        public long getTimestamp() {
+            return timestamp;
+        }
+    }
     
     /**
      * Constructs a new Parser with the given tokens.
@@ -36,6 +71,35 @@ public class Parser {
     public Parser(List<Token> tokens) {
         this.tokens = tokens;
         this.errors = new ArrayList<>();
+        this.hasSeenNonImportStatement = false;
+    }
+    
+    /**
+     * Parses the tokens into a list of statements with caching support.
+     * 
+     * @param cacheKey Optional cache key for caching the parse result (null to disable caching)
+     * @return List of parsed statements
+     */
+    public List<Statement> parse(String cacheKey) {
+        // Check cache if key provided
+        if (cacheKey != null) {
+            ParseResult cached = parseCache.get(cacheKey);
+            if (cached != null) {
+                // Return cached result
+                this.errors.addAll(cached.getErrors());
+                return cached.getStatements();
+            }
+        }
+        
+        // Parse the statements
+        List<Statement> statements = parse();
+        
+        // Cache the result if key provided
+        if (cacheKey != null) {
+            parseCache.put(cacheKey, new ParseResult(statements, errors));
+        }
+        
+        return statements;
     }
     
     /**
@@ -45,12 +109,19 @@ public class Parser {
      */
     public List<Statement> parse() {
         List<Statement> statements = new ArrayList<>();
+        List<Statement> importStatements = new ArrayList<>();
+        List<Statement> otherStatements = new ArrayList<>();
         
         while (!isAtEnd()) {
             try {
                 Statement stmt = parseStatement();
                 if (stmt != null) {
-                    statements.add(stmt);
+                    // Separate imports from other statements
+                    if (stmt instanceof ImportStatement) {
+                        importStatements.add(stmt);
+                    } else {
+                        otherStatements.add(stmt);
+                    }
                 }
             } catch (ParserException e) {
                 // Error has been recorded, synchronize and continue
@@ -58,7 +129,38 @@ public class Parser {
             }
         }
         
+        // Place imports first, then other statements
+        statements.addAll(importStatements);
+        statements.addAll(otherStatements);
+        
         return statements;
+    }
+    
+    /**
+     * Clears the parse cache.
+     */
+    public static void clearCache() {
+        parseCache.clear();
+    }
+    
+    /**
+     * Removes a specific entry from the parse cache.
+     * 
+     * @param cacheKey The cache key to remove
+     */
+    public static void removeCacheEntry(String cacheKey) {
+        if (cacheKey != null) {
+            parseCache.remove(cacheKey);
+        }
+    }
+    
+    /**
+     * Gets the size of the parse cache.
+     * 
+     * @return The number of cached entries
+     */
+    public static int getCacheSize() {
+        return parseCache.size();
     }
     
     /**
@@ -89,6 +191,17 @@ public class Parser {
      */
     private Statement parseStatement() throws ParserException {
         try {
+            // Import statement - must come before other statements
+            if (match(TokenType.IMPORT)) {
+                if (hasSeenNonImportStatement) {
+                    error(previous(), "Import statements must appear before all other statements");
+                }
+                return parseImportStatement();
+            }
+            
+            // Mark that we've seen a non-import statement
+            hasSeenNonImportStatement = true;
+            
             // Variable declaration
             if (match(TokenType.VAR, TokenType.VARIABLE)) {
                 return parseVarStatement();
@@ -111,6 +224,32 @@ public class Parser {
             recordError(e);
             throw e;
         }
+    }
+    
+    /**
+     * Parses an import statement.
+     * 
+     * Grammar: import "filename"
+     * 
+     * @return The parsed ImportStatement
+     * @throws ParserException if a syntax error is encountered
+     */
+    private Statement parseImportStatement() throws ParserException {
+        Token keyword = previous();
+        
+        // Expect string literal for filename
+        if (!check(TokenType.TEXT)) {
+            throw error(peek(), "Expected string literal for import filename");
+        }
+        
+        Token filename = advance();
+        
+        // Validate that the literal is actually a string
+        if (!(filename.getLiteral() instanceof String)) {
+            throw error(filename, "Import filename must be a string literal");
+        }
+        
+        return new ImportStatement(keyword, filename);
     }
     
     /**
@@ -573,6 +712,7 @@ public class Parser {
             // These keywords typically start new statements
             switch (peek().getTokenType()) {
                 case PROGRAM:
+                case IMPORT:
                 case VAR:
                 case VARIABLE:
                 case IF:

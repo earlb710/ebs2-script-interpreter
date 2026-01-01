@@ -20,6 +20,7 @@ public interface ASTVisitor<R, C> {
     R visitIfStatement(IfStatement stmt, C context);
     R visitBlockStatement(BlockStatement stmt, C context);
     R visitExpressionStatement(ExpressionStatement stmt, C context);
+    R visitImportStatement(ImportStatement stmt, C context);
     
     // Expression visitors
     R visitLiteralExpression(LiteralExpression expr, C context);

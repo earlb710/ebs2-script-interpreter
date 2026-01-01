@@ -2,7 +2,7 @@
 
 ## Overview
 
-The EBS2 Statement Parser is a recursive descent parser that converts a stream of tokens from the lexer into an Abstract Syntax Tree (AST). It features detailed error handling, error recovery, and comprehensive reporting.
+The EBS2 Statement Parser is a recursive descent parser that converts a stream of tokens from the lexer into an Abstract Syntax Tree (AST). It features detailed error handling, error recovery, comprehensive reporting, parse caching, and import statement support.
 
 ## Architecture
 
@@ -10,7 +10,7 @@ The EBS2 Statement Parser is a recursive descent parser that converts a stream o
 
 ```
 com.eb.script.parser/
-├── Parser.java              - Main parser class
+├── Parser.java              - Main parser class with caching
 ├── ParserException.java     - Parser exception with location info
 └── ParseError.java          - Error collection for batch reporting
 
@@ -23,6 +23,7 @@ com.eb.script.ast/
 ├── PrintStatement.java     - Print statement
 ├── VarStatement.java       - Variable declaration
 ├── IfStatement.java        - If-then-else statement
+├── ImportStatement.java    - Import statement (NEW)
 ├── ExpressionStatement.java - Standalone expression
 ├── LiteralExpression.java  - Literal values
 ├── VariableExpression.java - Variable references
@@ -40,6 +41,7 @@ The parser supports the following statements:
 - **Variable Declarations**: `var name as type = value`
 - **Print Statements**: `print expression`
 - **If Statements**: `if condition then statement [else statement] [end if]`
+- **Import Statements**: `import "filename"` (NEW)
 - **Expression Statements**: Standalone expressions
 
 ### 2. Expression Parsing
@@ -85,9 +87,64 @@ public interface ASTVisitor<R, C> {
     R visitPrintStatement(PrintStatement stmt, C context);
     R visitVarStatement(VarStatement stmt, C context);
     R visitIfStatement(IfStatement stmt, C context);
+    R visitImportStatement(ImportStatement stmt, C context);
     // ... more visitor methods
 }
 ```
+
+### 6. Import Statements (NEW)
+
+The parser now supports import statements for including external files:
+
+**Syntax**: `import "filename.ebs"`
+
+**Features**:
+- Import statements are automatically placed at the beginning of the parsed statements
+- Parser enforces that imports must appear before any other statements in source code
+- Violations generate detailed error messages
+
+**Example**:
+```javascript
+import "utils.ebs"
+import "helpers.ebs"
+
+var x = 5
+print x
+```
+
+Even if imports are mixed with other statements, they are reordered to appear first in the AST.
+
+### 7. Parse Caching (NEW)
+
+The parser includes a built-in caching mechanism to improve performance:
+
+**Features**:
+- Thread-safe concurrent cache using `ConcurrentHashMap`
+- Optional caching via cache keys
+- Cache management methods (clear, remove, size)
+- Stores both statements and errors
+
+**Usage**:
+```java
+// Parse with caching
+Lexer lexer = new Lexer(sourceCode);
+Parser parser = new Parser(lexer.scanTokens());
+List<Statement> statements = parser.parse("my_cache_key");
+
+// Clear cache
+Parser.clearCache();
+
+// Remove specific entry
+Parser.removeCacheEntry("my_cache_key");
+
+// Check cache size
+int size = Parser.getCacheSize();
+```
+
+**Benefits**:
+- Avoid re-parsing unchanged files
+- Significant performance improvement for repeated imports
+- Useful for REPL and incremental compilation scenarios
 
 ## Usage
 
@@ -154,7 +211,17 @@ The parser includes comprehensive test coverage:
 - User-friendly error messages
 - Error type classification
 
-**Total: 35 parser tests, all passing**
+### ParserImportTest.java (12 tests - NEW)
+- Simple import statement parsing
+- Multiple import statements
+- Import reordering (imports first)
+- Error when import comes after non-import
+- Import with different quote styles
+- Parse caching functionality
+- Cache clearing and removal
+- Cache size management
+
+**Total: 47 parser tests, all passing**
 
 ## Examples
 
