@@ -166,6 +166,39 @@ A fully-featured task management system combining:
 
 ---
 
+### 10_complex_records.ebs
+**Complex Record Definitions:**
+A comprehensive demonstration of advanced record structures in a company management system:
+- 4 levels of record inheritance (Person → Employee → Manager → Executive)
+- Deeply nested records (5+ levels deep)
+- Arrays of records within records
+- All data types: text, number, flag, date, indicator, arrays
+- Complex relationships and business logic
+- Type checking with inheritance chains
+
+**Key Concepts:**
+- Multiple inheritance levels
+- Deep nesting access patterns
+- Real-world enterprise data modeling
+- Type hierarchy with `typeof`
+- Indicator types for enumerations
+- Constrained number ranges
+- Emergency contacts and address structures
+- Project, task, and milestone tracking
+- Department and office hierarchies
+- Full company organizational structure
+
+**Demonstrates:**
+- `PersonType` → `EmployeeType` → `ManagerType` → `ExecutiveType`
+- Complex nested access: `company.departments[0].projects[0].tasks[0].assignedTo.address.city`
+- Arrays within records: `tasks as array.record`, `employees as array.record`
+- All EBS2 data types in one cohesive example
+- Type-safe indicator fields: `status as indicator ("active", "on-leave", "terminated")`
+- Range-constrained numbers: `performanceRating as number 0.0..5.0`
+- Recursive structures: `subdepartments as array.record` (departments within departments)
+
+---
+
 ## Running the Examples
 
 To run any example script:
@@ -193,6 +226,7 @@ Recommended order for learning:
 7. **07_records.ebs** - Data structures
 8. **08_dates.ebs** - Date operations
 9. **09_comprehensive_example.ebs** - Complete application
+10. **10_complex_records.ebs** - Advanced record structures (enterprise-level)
 
 ## Key Language Features Demonstrated
 
