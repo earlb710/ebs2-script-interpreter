@@ -21,6 +21,9 @@ public interface ASTVisitor<R, C> {
     R visitBlockStatement(BlockStatement stmt, C context);
     R visitExpressionStatement(ExpressionStatement stmt, C context);
     R visitImportStatement(ImportStatement stmt, C context);
+    R visitWhileStatement(WhileStatement stmt, C context);
+    R visitForStatement(ForStatement stmt, C context);
+    R visitRepeatStatement(RepeatStatement stmt, C context);
     
     // Expression visitors
     R visitLiteralExpression(LiteralExpression expr, C context);

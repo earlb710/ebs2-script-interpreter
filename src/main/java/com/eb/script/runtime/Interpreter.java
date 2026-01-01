@@ -123,6 +123,86 @@ public class Interpreter implements ASTVisitor<Object, RuntimeContext> {
         return null;
     }
     
+    @Override
+    public Object visitWhileStatement(WhileStatement stmt, RuntimeContext context) {
+        // Execute the loop while condition is truthy
+        while (isTruthy(stmt.getCondition().accept(this, context))) {
+            stmt.getBody().accept(this, context);
+        }
+        return null;
+    }
+    
+    @Override
+    public Object visitForStatement(ForStatement stmt, RuntimeContext context) {
+        // Evaluate start, end, and step expressions
+        Object startObj = stmt.getStart().accept(this, context);
+        Object endObj = stmt.getEnd().accept(this, context);
+        
+        if (!isNumber(startObj) || !isNumber(endObj)) {
+            throw new RuntimeException("For loop range must be numbers");
+        }
+        
+        double start = toDouble(startObj);
+        double end = toDouble(endObj);
+        double step = 1.0;
+        
+        if (stmt.getStep() != null) {
+            Object stepObj = stmt.getStep().accept(this, context);
+            if (!isNumber(stepObj)) {
+                throw new RuntimeException("For loop step must be a number");
+            }
+            step = toDouble(stepObj);
+            if (step == 0.0) {
+                throw new RuntimeException("For loop step cannot be zero");
+            }
+        }
+        
+        // Create a new scope for the loop variable
+        RuntimeContext loopContext = context.createChild();
+        String varName = stmt.getVariable().getLexeme();
+        
+        // Define the loop variable once
+        loopContext.define(varName, 0);
+        
+        // Execute the loop
+        if (step > 0) {
+            for (double i = start; i <= end; i += step) {
+                loopContext.assign(varName, (int)i);
+                stmt.getBody().accept(this, loopContext);
+            }
+        } else {
+            for (double i = start; i >= end; i += step) {
+                loopContext.assign(varName, (int)i);
+                stmt.getBody().accept(this, loopContext);
+            }
+        }
+        
+        return null;
+    }
+    
+    @Override
+    public Object visitRepeatStatement(RepeatStatement stmt, RuntimeContext context) {
+        // Evaluate times expression
+        Object timesObj = stmt.getTimes().accept(this, context);
+        
+        if (!isNumber(timesObj)) {
+            throw new RuntimeException("Repeat times must be a number");
+        }
+        
+        int times = (int) toDouble(timesObj);
+        
+        if (times < 0) {
+            throw new RuntimeException("Repeat times cannot be negative");
+        }
+        
+        // Execute the body 'times' times
+        for (int i = 0; i < times; i++) {
+            stmt.getBody().accept(this, context);
+        }
+        
+        return null;
+    }
+    
     // ===== Expression Visitors =====
     
     @Override
