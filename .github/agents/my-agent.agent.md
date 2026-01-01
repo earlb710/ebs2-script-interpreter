@@ -17,7 +17,7 @@ This agent assists with development of the EBS2 Script Interpreter project, foll
 ### Core Documentation (`doc/` directory)
 All language specifications, guides, and documentation are located in the `doc/` directory:
 
-- **Language Specification**: `doc/EBS2_LANGUAGE_SPEC.md` - Complete formal specification (105KB)
+- **Language Specification**: `doc/EBS2_LANGUAGE_SPEC.md` - Complete formal specification
 - **Quick Start Guide**: `doc/EBS2_QUICK_START_GUIDE.md` - Beginner tutorial
 - **Quick Reference**: `doc/EBS2_QUICK_REFERENCE.md` - One-page reference card
 - **Requirements**: `doc/EBS2_REQUIREMENTS.md` - Design principles and requirements
@@ -114,7 +114,7 @@ After tests are passing:
 ```
 1. Write failing tests (TDD approach)
 2. Implement feature to make tests pass
-3. Run: mvn test
+3. Run tests to verify implementation
 4. Fix any issues until all tests pass
 5. Create example script in doc/examples/
 6. Update doc/examples/README.md
