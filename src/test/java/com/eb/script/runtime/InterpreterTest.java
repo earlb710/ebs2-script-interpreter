@@ -184,7 +184,8 @@ public class InterpreterTest {
             """;
         execute(source);
         
-        assertEquals("1\n2\n3", getOutput());
+        String expected = "1" + System.lineSeparator() + "2" + System.lineSeparator() + "3";
+        assertEquals(expected, getOutput());
     }
     
     // ===== Arithmetic Expression Tests =====
@@ -479,7 +480,8 @@ public class InterpreterTest {
             """;
         execute(source);
         
-        assertEquals("30\nlarge", getOutput());
+        String expected = "30" + System.lineSeparator() + "large";
+        assertEquals(expected, getOutput());
     }
     
     @Test
