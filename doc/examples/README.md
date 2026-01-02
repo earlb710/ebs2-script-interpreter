@@ -219,6 +219,44 @@ A script specifically designed to demonstrate the parser's capabilities:
 
 ---
 
+### 11_import_example.ebs
+**Import Demonstration:**
+Example showing EBS2's import system:
+- Import statements for code modularization
+- Import statement ordering requirements
+- Parser enforcement that imports come first
+
+**Key Concepts:**
+- Import statements must appear before all other statements
+- Supports code organization and reusability
+
+---
+
+### 12_interpreter_demo.ebs
+**Interpreter Demonstration:**
+A complete example demonstrating the statement interpreter executing EBS2 code:
+- Variable declarations and initialization
+- Print statements
+- Arithmetic expressions with operator precedence
+- Comparison operators (`<`, `>`, `<=`, `>=`, `==`)
+- Logical operators (`and`, `or`, `not`)
+- Conditional statements (if-then-else)
+- String concatenation
+- Expression grouping with parentheses
+
+**Key Concepts:**
+- Interpreter executes statements in runtime context
+- Variables stored with proper scoping
+- Expression evaluation with correct operator precedence
+- Type handling for Integer, Double, String, and Boolean values
+
+**Running the Demo:**
+```bash
+mvn compile exec:java -Dexec.mainClass="com.eb.script.runtime.InterpreterDemo"
+```
+
+---
+
 ## Running the Examples
 
 To run any example script:
@@ -248,6 +286,8 @@ Recommended order for learning:
 9. **09_comprehensive_example.ebs** - Complete application
 10. **10_complex_records.ebs** - Advanced record structures (enterprise-level)
 11. **10_parser_example.ebs** - Parser demonstration (syntax verification)
+12. **11_import_example.ebs** - Import system demonstration
+13. **12_interpreter_demo.ebs** - Interpreter execution demonstration
 
 ## Key Language Features Demonstrated
 

@@ -235,6 +235,21 @@ public class Parser {
                 return parseIfStatement();
             }
             
+            // While loop
+            if (match(TokenType.WHILE)) {
+                return parseWhileStatement();
+            }
+            
+            // For loop
+            if (match(TokenType.FOR)) {
+                return parseForStatement();
+            }
+            
+            // Repeat loop
+            if (match(TokenType.REPEAT)) {
+                return parseRepeatStatement();
+            }
+            
             // Expression statement
             return parseExpressionStatement();
             
@@ -381,6 +396,185 @@ public class Parser {
         }
         
         return new IfStatement(keyword, condition, thenBranch, elseBranch, endToken);
+    }
+    
+    /**
+     * Parses a while loop statement.
+     * 
+     * Grammar: while EXPRESSION loop STATEMENT end while
+     * 
+     * @return The parsed WhileStatement
+     * @throws ParserException if a syntax error is encountered
+     */
+    private Statement parseWhileStatement() throws ParserException {
+        Token keyword = previous();
+        
+        // Parse condition
+        Expression condition;
+        try {
+            condition = parseExpression();
+        } catch (ParserException e) {
+            error(peek(), "Invalid condition in while statement");
+            throw e;
+        }
+        
+        // Expect 'loop' keyword
+        Token loopToken = consume(TokenType.LOOP, "Expected 'loop' after while condition");
+        
+        // Parse body - collect statements until 'end while'
+        List<Statement> bodyStatements = new ArrayList<>();
+        while (!check(TokenType.END) && !isAtEnd()) {
+            try {
+                bodyStatements.add(parseStatement());
+            } catch (ParserException e) {
+                synchronize();
+            }
+        }
+        
+        // Expect 'end while'
+        Token endToken = null;
+        if (check(TokenType.END)) {
+            endToken = advance();
+            if (!match(TokenType.WHILE)) {
+                throw error(previous(), "Expected 'while' after 'end'");
+            }
+        }
+        
+        // Create block statement for body
+        Statement body = bodyStatements.size() == 1 
+            ? bodyStatements.get(0) 
+            : new BlockStatement(bodyStatements, loopToken, endToken);
+        
+        return new WhileStatement(keyword, condition, body, endToken);
+    }
+    
+    /**
+     * Parses a for loop statement.
+     * 
+     * Grammar: for IDENTIFIER = EXPRESSION to EXPRESSION [step EXPRESSION] loop STATEMENT end for
+     * 
+     * @return The parsed ForStatement
+     * @throws ParserException if a syntax error is encountered
+     */
+    private Statement parseForStatement() throws ParserException {
+        Token keyword = previous();
+        
+        // Expect loop variable identifier
+        Token variable = consume(TokenType.IDENTIFIER, "Expected variable name after 'for'");
+        
+        // Expect '='
+        consume(TokenType.ASSIGN, "Expected '=' after for loop variable");
+        
+        // Parse start expression
+        Expression start;
+        try {
+            start = parseExpression();
+        } catch (ParserException e) {
+            error(peek(), "Invalid start expression in for loop");
+            throw e;
+        }
+        
+        // Expect 'to'
+        consume(TokenType.TO, "Expected 'to' in for loop");
+        
+        // Parse end expression
+        Expression end;
+        try {
+            end = parseExpression();
+        } catch (ParserException e) {
+            error(peek(), "Invalid end expression in for loop");
+            throw e;
+        }
+        
+        // Optional 'step' expression
+        Expression step = null;
+        if (match(TokenType.STEP)) {
+            try {
+                step = parseExpression();
+            } catch (ParserException e) {
+                error(peek(), "Invalid step expression in for loop");
+                throw e;
+            }
+        }
+        
+        // Expect 'loop' keyword
+        Token loopToken = consume(TokenType.LOOP, "Expected 'loop' after for range");
+        
+        // Parse body - collect statements until 'end for'
+        List<Statement> bodyStatements = new ArrayList<>();
+        while (!check(TokenType.END) && !isAtEnd()) {
+            try {
+                bodyStatements.add(parseStatement());
+            } catch (ParserException e) {
+                synchronize();
+            }
+        }
+        
+        // Expect 'end for'
+        Token endToken = null;
+        if (check(TokenType.END)) {
+            endToken = advance();
+            if (!match(TokenType.FOR)) {
+                throw error(previous(), "Expected 'for' after 'end'");
+            }
+        }
+        
+        // Create block statement for body
+        Statement body = bodyStatements.size() == 1 
+            ? bodyStatements.get(0) 
+            : new BlockStatement(bodyStatements, loopToken, endToken);
+        
+        return new ForStatement(keyword, variable, start, end, step, body, endToken);
+    }
+    
+    /**
+     * Parses a repeat loop statement.
+     * 
+     * Grammar: repeat EXPRESSION times STATEMENT end repeat
+     * 
+     * @return The parsed RepeatStatement
+     * @throws ParserException if a syntax error is encountered
+     */
+    private Statement parseRepeatStatement() throws ParserException {
+        Token keyword = previous();
+        
+        // Parse times expression
+        Expression times;
+        try {
+            times = parseExpression();
+        } catch (ParserException e) {
+            error(peek(), "Invalid times expression in repeat statement");
+            throw e;
+        }
+        
+        // Expect 'times' keyword
+        Token timesToken = consume(TokenType.TIMES, "Expected 'times' after repeat expression");
+        
+        // Parse body - collect statements until 'end repeat'
+        List<Statement> bodyStatements = new ArrayList<>();
+        while (!check(TokenType.END) && !isAtEnd()) {
+            try {
+                bodyStatements.add(parseStatement());
+            } catch (ParserException e) {
+                synchronize();
+            }
+        }
+        
+        // Expect 'end repeat'
+        Token endToken = null;
+        if (check(TokenType.END)) {
+            endToken = advance();
+            if (!match(TokenType.REPEAT)) {
+                throw error(previous(), "Expected 'repeat' after 'end'");
+            }
+        }
+        
+        // Create block statement for body
+        Statement body = bodyStatements.size() == 1 
+            ? bodyStatements.get(0) 
+            : new BlockStatement(bodyStatements, timesToken, endToken);
+        
+        return new RepeatStatement(keyword, times, body, endToken);
     }
     
     /**
