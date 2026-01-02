@@ -15,7 +15,11 @@ This agent assists with development of the EBS2 Script Interpreter project, foll
 ## Important Document Locations
 
 ### Core Documentation (`doc/` directory)
-All language specifications, guides, and documentation are located in the `doc/` directory:
+No document should be in ebs2-script-interpreter directory they all should be in ebs2-script-interpreter/doc, which would be reffered to as the doc directory.
+For sets of documents that goes together create a sub directory for them and update this document with the details : like test and implementation documents.
+Try to keep the doc direcoty uncluttered.
+ 
+All documentation are located in the `doc/` directory:
 
 - **Language Specification**: `doc/EBS2_LANGUAGE_SPEC.md` - Complete formal specification
 - **Quick Start Guide**: `doc/EBS2_QUICK_START_GUIDE.md` - Beginner tutorial
@@ -40,7 +44,6 @@ All language specifications, guides, and documentation are located in the `doc/`
   - `parser/` - Parser
   - `ast/` - Abstract Syntax Tree
   - `runtime/` - Runtime engine
-  - `stdlib/` - Standard library
   - `types/` - Type system
   - `ui/` - UI components
 
@@ -48,7 +51,6 @@ All language specifications, guides, and documentation are located in the `doc/`
 All tests follow Maven standard structure:
 - **Test Source**: `src/test/java/com/eb/script/` - Test classes mirror source structure
   - `lexer/` - Lexer tests (e.g., `LexerTest.java`, `TokenColorTest.java`)
-  - `stdlib/` - Standard library tests (e.g., `JSONFunctionsTest.java`)
   - `types/` - Type system tests (e.g., `JSONValueTest.java`)
 - **Server Tests**: `src/test/java/com/eb/server/` - Server tests (e.g., `LocalServerTest.java`)
 
