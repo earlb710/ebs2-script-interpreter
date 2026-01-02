@@ -21,6 +21,14 @@ This directory contains the complete specification for EBS2 - a redesigned scrip
 | [ANSWER_COMPLEX_RECORDS.md](ANSWER_COMPLEX_RECORDS.md) | Quick answer: What do complex records look like? |
 | [EBS2_DOCS_STRUCTURE.txt](EBS2_DOCS_STRUCTURE.txt) | Visual documentation tree |
 
+## 🛠️ Implementation Guides
+
+| Document | Purpose |
+|----------|---------|
+| [RUNNING_APPLICATIONS.md](RUNNING_APPLICATIONS.md) | Guide for running the 3 main executables |
+| [JSON_PACKAGE_README.md](JSON_PACKAGE_README.md) | JSON datatype implementation details |
+| [CONSOLE_PACKAGE_README.md](CONSOLE_PACKAGE_README.md) | Console package overview |
+
 ## 📋 Quality Assurance
 
 | Document | Purpose |
