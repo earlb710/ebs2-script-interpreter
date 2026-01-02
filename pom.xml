@@ -8,7 +8,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.release>17</maven.compiler.release>
-        <exec.mainClass>com.eb.script.ebs2</exec.mainClass>
+        <exec.mainClass>com.eb.cli.CommandLineApp</exec.mainClass>
         <javafx.version>17.0.12</javafx.version>
         <jersey.version>3.1.3</jersey.version>
         <junit.version>5.10.1</junit.version>
@@ -282,7 +282,7 @@
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>0.0.8</version>
                 <configuration>
-                    <mainClass>com.eb.scriptinterpreter/com.eb.ui.cli.MainApp</mainClass>
+                    <mainClass>com.eb.cli.ConsoleApp</mainClass>
                     <options>
                         <!-- Export JavaFX internal packages to our module and automatic modules (ALL-UNNAMED) -->
                         <!-- These are needed for javafxsvg, Batik, and WebView internals -->
@@ -313,10 +313,9 @@
                         <configuration>
                             <finalName>ebs2-interpreter-javafx</finalName>
                             <transformers>
-                                <!-- Note: Main class not specified - will be added during implementation phase -->
-                                <!-- <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>com.eb.ui.cli.MainApp</mainClass>
-                                </transformer> -->
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>com.eb.cli.ConsoleApp</mainClass>
+                                </transformer>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
                             </transformers>
                             <filters>
@@ -349,6 +348,29 @@
                     </webResources>
                 </configuration>
             </plugin>
+            
+            <!-- Exec Maven Plugin for running applications -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <!-- Default execution for command-line app -->
+                    <execution>
+                        <id>default-cli</id>
+                        <configuration>
+                            <mainClass>com.eb.cli.CommandLineApp</mainClass>
+                        </configuration>
+                    </execution>
+                    <!-- Execution for server app -->
+                    <execution>
+                        <id>server</id>
+                        <configuration>
+                            <mainClass>com.eb.server.ServerApp</mainClass>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>        
     </build>
     
@@ -371,8 +393,7 @@
                         <configuration>
                             <archive>
                                 <manifest>
-                                    <!-- Main class will be added during implementation phase -->
-                                    <!-- <mainClass>com.eb.ui.cli.MainApp</mainClass> -->
+                                    <mainClass>com.eb.cli.ConsoleApp</mainClass>
                                 </manifest>
                             </archive>
                         </configuration>
