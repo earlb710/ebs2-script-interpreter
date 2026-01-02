@@ -91,17 +91,19 @@ mvn clean package
 
 This creates `target/ebs2-interpreter-javafx.jar` containing all required dependencies.
 
-### 2. Run the JavaFX Application
+### 2. Run the JavaFX Console Application
 
+**Using Maven (recommended for development):**
+```bash
+mvn javafx:run
+```
+
+**Using the fat JAR:**
 ```bash
 java -jar target/ebs2-interpreter-javafx.jar
 ```
 
-Or using Maven:
-
-```bash
-mvn javafx:run
-```
+**Note:** Do NOT use `mvn exec:java` for JavaFX applications. The `javafx:run` goal properly configures the JavaFX module path. If you see "Error: JavaFX runtime components are missing", you're using the wrong command - use `mvn javafx:run` instead.
 
 ### 3. Distribution
 
@@ -109,6 +111,18 @@ Distribute the `ebs2-interpreter-javafx.jar` file. Users only need Java 17+ inst
 
 ```bash
 java -jar ebs2-interpreter-javafx.jar
+```
+
+## Running the Command-Line Script Interpreter
+
+The CommandLineApp executes EBS2 script files without a GUI:
+
+```bash
+# Using Maven
+mvn exec:java -Dexec.args="path/to/script.ebs"
+
+# Using the compiled classes
+java -cp target/classes com.eb.cli.CommandLineApp path/to/script.ebs
 ```
 
 ## Building for HTML Frontend (Web Application)

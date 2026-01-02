@@ -353,20 +353,32 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
-                <version>3.1.0</version>
+                <version>3.5.0</version>
+                <configuration>
+                    <!-- Use module path for JPMS support -->
+                    <longModulepath>false</longModulepath>
+                </configuration>
                 <executions>
                     <!-- Default execution for command-line app -->
                     <execution>
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>com.eb.cli.CommandLineApp</mainClass>
+                            <mainClass>com.eb.scriptinterpreter/com.eb.cli.CommandLineApp</mainClass>
+                        </configuration>
+                    </execution>
+                    <!-- Execution for JavaFX console app -->
+                    <execution>
+                        <id>console</id>
+                        <configuration>
+                            <mainClass>com.eb.scriptinterpreter/com.eb.cli.ConsoleApp</mainClass>
+                            <!-- Note: Use 'mvn javafx:run' instead for better JavaFX support -->
                         </configuration>
                     </execution>
                     <!-- Execution for server app -->
                     <execution>
                         <id>server</id>
                         <configuration>
-                            <mainClass>com.eb.server.ServerApp</mainClass>
+                            <mainClass>com.eb.scriptinterpreter/com.eb.server.ServerApp</mainClass>
                         </configuration>
                     </execution>
                 </executions>
