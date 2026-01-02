@@ -1,4 +1,4 @@
-package com.eb.script.types;
+package com.eb.script.json;
 
 import java.util.*;
 

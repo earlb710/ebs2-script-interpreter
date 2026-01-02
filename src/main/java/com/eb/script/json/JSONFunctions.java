@@ -1,6 +1,4 @@
-package com.eb.script.stdlib;
-
-import com.eb.script.types.JSONValue;
+package com.eb.script.json;
 
 /**
  * JSONFunctions provides static utility functions for JSON operations in EBS2.

@@ -1,7 +1,7 @@
 package com.eb.script.console;
 
-import com.eb.script.stdlib.JSONFunctions;
-import com.eb.script.types.JSONValue;
+import com.eb.script.json.JSONFunctions;
+import com.eb.script.json.JSONValue;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
