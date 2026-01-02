@@ -1,7 +1,7 @@
 # EBS2 Script Interpreter - Repository Structure
 
 **Version:** 1.0.0  
-**Last Updated:** December 29, 2025
+**Last Updated:** January 2, 2026
 
 ---
 
@@ -17,8 +17,8 @@ This document defines the complete directory structure for the EBS2 Script Inter
 ebs2-script-interpreter/
 ├── doc/                          # Documentation
 │   ├── examples/                 # Example EBS2 scripts
-│   ├── *.md                      # Specification and guide documents
-│   └── *.txt                     # Structure and metadata files
+│   ├── implementation/           # Implementation-specific docs
+│   └── *.md                      # Specification and guide documents
 │
 ├── src/                          # Maven source directory
 │   ├── main/
@@ -96,6 +96,13 @@ doc/
 │   ├── 09_comprehensive_example.ebs
 │   └── README.md                               # Examples index
 │
+├── implementation/                             # Implementation-specific documentation
+│   ├── PARSER_README.md                        # Parser documentation
+│   ├── PARSER_COMPARISON.md                    # EBS1 vs EBS2 parser comparison
+│   ├── PARSER_OPTIMIZATIONS.md                 # Parser performance optimizations
+│   ├── JSON_IMPLEMENTATION_SUMMARY.md          # JSON datatype implementation
+│   └── README.md                               # Implementation docs index
+│
 ├── EBS2_INDEX.md                               # Central navigation guide
 ├── EBS2_SPECIFICATION_SUMMARY.md               # Executive summary
 ├── EBS2_REQUIREMENTS.md                        # Design principles and requirements
@@ -104,10 +111,13 @@ doc/
 ├── EBS2_QUICK_REFERENCE.md                     # Quick reference card
 ├── EBS2_QUICK_START_GUIDE.md                   # Beginner tutorial
 ├── EBS1_VS_EBS2_COMPARISON.md                  # Migration guide
-├── BEFORE_AND_AFTER.md                         # Documentation evolution
-├── DOCUMENTATION_ISSUES_ANALYSIS.md            # Documentation review
-├── DOCUMENTATION_OPTIMIZATION_SUMMARY.md       # Documentation improvements
-├── EBS2_DOCS_STRUCTURE.txt                     # Documentation tree
+├── COMPLEX_RECORD_DEFINITIONS.md               # Complex record structures guide
+├── ANSWER_COMPLEX_RECORDS.md                   # Quick answer: complex records
+├── EBS2_SCREEN_DEFINITION.md                   # Screen definition documentation
+├── EBS2_JSON_DATATYPE.md                       # JSON datatype user documentation
+├── RUNNING_APPLICATIONS.md                     # Guide for running applications
+├── JSON_PACKAGE_README.md                      # JSON package documentation
+├── CONSOLE_PACKAGE_README.md                   # Console package documentation
 └── README.md                                   # Documentation overview
 ```
 

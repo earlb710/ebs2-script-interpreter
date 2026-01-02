@@ -19,7 +19,6 @@ This directory contains the complete specification for EBS2 - a redesigned scrip
 | [EBS2_QUICK_REFERENCE.md](EBS2_QUICK_REFERENCE.md) | One-page quick reference card |
 | [COMPLEX_RECORD_DEFINITIONS.md](COMPLEX_RECORD_DEFINITIONS.md) | Comprehensive guide to complex record structures |
 | [ANSWER_COMPLEX_RECORDS.md](ANSWER_COMPLEX_RECORDS.md) | Quick answer: What do complex records look like? |
-| [EBS2_DOCS_STRUCTURE.txt](EBS2_DOCS_STRUCTURE.txt) | Visual documentation tree |
 
 ## 🛠️ Implementation Guides
 
@@ -28,13 +27,12 @@ This directory contains the complete specification for EBS2 - a redesigned scrip
 | [RUNNING_APPLICATIONS.md](RUNNING_APPLICATIONS.md) | Guide for running the 3 main executables |
 | [JSON_PACKAGE_README.md](JSON_PACKAGE_README.md) | JSON datatype implementation details |
 | [CONSOLE_PACKAGE_README.md](CONSOLE_PACKAGE_README.md) | Console package overview |
+| [implementation/](implementation/) | Implementation-specific documentation (parser, JSON, etc.) |
 
-## 📋 Quality Assurance
+## 📂 Subdirectories
 
-| Document | Purpose |
-|----------|---------|
-| [DOCUMENTATION_ISSUES_ANALYSIS.md](DOCUMENTATION_ISSUES_ANALYSIS.md) | Comprehensive analysis of documentation issues found and resolved |
-| [DOCUMENTATION_OPTIMIZATION_SUMMARY.md](DOCUMENTATION_OPTIMIZATION_SUMMARY.md) | Summary of optimization work completed |
+- **[examples/](examples/)** - Example EBS2 scripts demonstrating language features
+- **[implementation/](implementation/)** - Implementation documentation for specific components
 
 ## 🎯 Quick Overview
 
@@ -65,16 +63,15 @@ end
 
 ## 📊 Specification Stats
 
-- **Total Documentation:** 192KB (including quality assurance docs)
 - **Core Specification:** 172KB
-- **Total Lines:** 7,600+
+- **Total Lines:** 6,974
 - **Code Examples:** 200+
 - **Implementation Timeline:** 12 months
 
 ## 🚀 Status
 
 ✅ **Specification Complete** - Ready for review and implementation  
-✅ **Documentation Optimized** - All critical issues resolved (Dec 2025)  
+✅ **Documentation Cleaned Up** - Organized structure (Jan 2026)  
 ⏳ **Awaiting Stakeholder Approval**
 
 ---
