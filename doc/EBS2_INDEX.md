@@ -20,14 +20,12 @@ This specification defines EBS2, a redesigned scripting language focused on begi
 | [🚀 Quick Start](EBS2_QUICK_START_GUIDE.md) | 16.5KB | 829 | Beginner-friendly tutorial |
 | [⚡ Quick Reference](EBS2_QUICK_REFERENCE.md) | 9.0KB | 350 | One-page syntax reference card |
 
-**Quality Assurance:**
-| Document | Size | Purpose |
-|----------|------|---------|
-| [🔍 Issues Analysis](DOCUMENTATION_ISSUES_ANALYSIS.md) | 10.4KB | Analysis of documentation issues |
-| [✅ Optimization Summary](DOCUMENTATION_OPTIMIZATION_SUMMARY.md) | 11.3KB | Summary of improvements made |
+**Implementation Guides:**
+| Document | Purpose |
+|----------|---------|
+| [implementation/](implementation/) | Implementation-specific documentation (parser, JSON, etc.) |
 
-**Total Core Documentation:** 172KB, 6,974 lines  
-**Total with QA:** 192KB, 7,600+ lines
+**Total Core Documentation:** 172KB, 6,974 lines
 
 ## 📖 Reading Guide
 
