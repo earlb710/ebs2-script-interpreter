@@ -53,39 +53,39 @@ module com.eb.scriptinterpreter {
     requires commons.io;
     requires commons.logging;
     
-    // Jakarta EE APIs
-    requires jakarta.servlet;
-    requires jakarta.ws.rs;
-    requires jakarta.json.bind;
-    requires jakarta.inject;
-    requires jakarta.annotation;
-    requires jakarta.validation;
+    // Jakarta EE APIs (optional - only needed for web deployment)
+    requires static jakarta.servlet;
+    requires static jakarta.ws.rs;
+    requires static jakarta.json.bind;
+    requires static jakarta.inject;
+    requires static jakarta.annotation;
+    requires static jakarta.validation;
     
-    // Jersey REST Framework
-    requires jersey.server;
-    requires jersey.common;
-    requires jersey.client;
-    requires jersey.container.servlet;
-    requires jersey.container.servlet.core;
-    requires jersey.container.grizzly2.http;
-    requires jersey.media.json.binding;
-    requires jersey.hk2;
+    // Jersey REST Framework (optional - only needed for REST API)
+    requires static jersey.server;
+    requires static jersey.common;
+    requires static jersey.client;
+    requires static jersey.container.servlet;
+    requires static jersey.container.servlet.core;
+    requires static jersey.container.grizzly2.http;
+    requires static jersey.media.json.binding;
+    requires static jersey.hk2;
     
-    // HK2 Dependency Injection
-    requires org.glassfish.hk2.api;
-    requires org.glassfish.hk2.locator;
-    requires org.glassfish.hk2.utilities;
-    requires org.aopalliance;
-    requires osgi.resource.locator;
+    // HK2 Dependency Injection (optional - only needed for REST API)
+    requires static org.glassfish.hk2.api;
+    requires static org.glassfish.hk2.locator;
+    requires static org.glassfish.hk2.utilities;
+    requires static org.aopalliance;
+    requires static osgi.resource.locator;
     
-    // Grizzly HTTP Server
-    requires grizzly.http.server;
-    requires grizzly.http;
-    requires grizzly.framework;
+    // Grizzly HTTP Server (optional - only needed for embedded server)
+    requires static grizzly.http.server;
+    requires static grizzly.http;
+    requires static grizzly.framework;
     
-    // JSON-B Implementation
-    requires org.eclipse.yasson;
-    requires jakarta.json;
+    // JSON-B Implementation (optional - only needed for JSON binding)
+    requires static org.eclipse.yasson;
+    requires static jakarta.json;
     
     // Export Public API Packages
     // Core interpreter packages
